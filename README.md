@@ -1,2 +1,0 @@
-# teamatica.github.io
-🌍
