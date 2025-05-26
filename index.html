@@ -305,15 +305,19 @@
 
 			if (!img) return;
 
-			img.src = getImagePath('png');
 			img.onload = function() {
 				positionElements();
-				const webpImg = new Image();
-				webpImg.onload = function() {
-					img.src = getImagePath('webp');
-				};
-				webpImg.src = getImagePath('webp');
 			};
+
+			img.src = getImagePath('png');
+			const webpImg = new Image();
+			webpImg.onload = function() {
+				img.src = getImagePath('webp');
+			};
+
+			setTimeout(() => {
+				webpImg.src = getImagePath('webp');
+			}, 100);
 		}
 
 		function positionElements() {
