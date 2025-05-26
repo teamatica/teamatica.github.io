@@ -171,36 +171,6 @@
 			}
 		}
 	</style>
-	<script>
-		function getInitialThemeAndLang() {
-			const userLang = navigator.languages?.[0] || navigator.language || 'en';
-			const langCode = userLang.substr(0, 2).toLowerCase();
-			const supportedLocales = {
-				kk: 'kk',
-				ru: 'ru',
-				uk: 'uk'
-			};
-			const lang = supportedLocales[langCode] || 'en';
-			const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			return {
-				lang,
-				isDark
-			};
-		}
-
-		const {
-			lang,
-			isDark
-		} = getInitialThemeAndLang();
-
-		document.addEventListener('DOMContentLoaded', function() {
-			const img = document.getElementById('screenshot-img');
-
-			if (img) {
-				img.src = `Teamatica-${lang}-${isDark ? 'dark' : 'light'}.png`;
-			}
-		});
-	</script>
 </head>
 
 <body>
@@ -308,12 +278,19 @@
 			return supportedLocales[langCode] || 'en';
 		}
 
+		function getImagePath(format = 'png') {
+			const lang = getUserLanguage();
+			const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			return `Teamatica-${lang}-${isDark ? 'dark' : 'light'}.${format}`;
+		}
+
 		function applyTranslations() {
 			const lang = getUserLanguage();
 			const data = translations[lang];
 
 			for (let i = 0; i < 4; i++) {
 				document.getElementById(`head-${i + 1}`).textContent = data.headings[i];
+
 				for (let j = 0; j < 5; j++) {
 					document.getElementById(`h${i + 1}p${j + 1}`).innerHTML = data.paragraphs[i][j];
 				}
@@ -321,15 +298,23 @@
 
 			document.getElementById('title-text').textContent = data.title;
 			document.getElementById('download-text').textContent = data.download;
-			const img = document.getElementById('screenshot-img');
-			const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			img.src = `Teamatica-${lang}-${isDark ? 'dark' : 'light'}.webp`;
 		}
 
-		window.addEventListener('load', () => {
-			applyTranslations();
-			positionElements();
-		});
+		function loadImage() {
+			const img = document.getElementById('screenshot-img');
+
+			if (!img) return;
+
+			img.src = getImagePath('png');
+			img.onload = function() {
+				positionElements();
+				const webpImg = new Image();
+				webpImg.onload = function() {
+					img.src = getImagePath('webp');
+				};
+				webpImg.src = getImagePath('webp');
+			};
+		}
 
 		function positionElements() {
 			const img = document.getElementById('screenshot-img');
@@ -371,10 +356,18 @@
 			}
 		}
 
-		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTranslations);
-		window.addEventListener('languagechange', applyTranslations);
-		document.getElementById('screenshot-img').addEventListener('load', positionElements);
-		window.addEventListener('load', positionElements);
+		function handleThemeOrLanguageChange() {
+			applyTranslations();
+			loadImage();
+		}
+
+		document.addEventListener('DOMContentLoaded', function() {
+			applyTranslations();
+			loadImage();
+		});
+
+		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleThemeOrLanguageChange);
+		window.addEventListener('languagechange', handleThemeOrLanguageChange);
 		window.addEventListener('resize', positionElements);
 		setTimeout(positionElements, 100);
 	</script>
