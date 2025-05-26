@@ -62,21 +62,35 @@
 			display: block;
 		}
 
-		.background-text {
+		.background-text,
+		.title-text,
+		.demo-beta-links,
+		.download-button {
 			position: absolute;
-			font-weight: 900;
-			color: #379BFF;
-			z-index: -1;
+			visibility: hidden;
+			transition: all 0.3s ease-out;
 		}
 
 		.title-text {
-			position: absolute;
-			font-weight: 100;
+			font-size: 36px;
+			top: 10px;
+			left: 50%;
+			transform: translateX(-50%);
+		}
+
+		.background-text {
+			font-size: 120px;
+			top: -40px;
+			left: 50%;
+			transform: translateX(-50%);
+			filter: blur(5px);
+			z-index: -1;
 		}
 
 		.demo-beta-links {
-			position: absolute;
-			font-weight: 100;
+			font-size: 12px;
+			top: 650px;
+			left: 10px;
 			display: flex;
 			align-items: center;
 		}
@@ -96,7 +110,6 @@
 		}
 
 		.download-button {
-			position: absolute;
 			background-color: #379BFF;
 			color: white;
 			border: none;
@@ -105,6 +118,12 @@
 			align-items: center;
 			justify-content: center;
 			text-decoration: none;
+			width: 200px;
+			height: 40px;
+			font-size: 16px;
+			top: 700px;
+			left: 50%;
+			transform: translateX(-50%);
 		}
 
 		.download-button:hover {
@@ -112,7 +131,7 @@
 		}
 
 		.download-button:active {
-			transform: translateY(1px);
+			transform: translateX(-50%) translateY(1px);
 		}
 
 		.text-block p::before {
@@ -374,6 +393,11 @@
 		window.addEventListener('languagechange', handleThemeOrLanguageChange);
 		window.addEventListener('resize', positionElements);
 		setTimeout(positionElements, 100);
+
+		backgroundText.style.visibility = 'visible';
+		titleText.style.visibility = 'visible';
+		demoBetaLinks.style.visibility = 'visible';
+		downloadButton.style.visibility = 'visible';
 	</script>
 </body>
 
