@@ -95,7 +95,7 @@
 			margin: 0 0.5em;
 		}
 
-		.download-button {
+		.open-button {
 			position: absolute;
 			background-color: #379BFF;
 			color: white;
@@ -107,11 +107,11 @@
 			text-decoration: none;
 		}
 
-		.download-button:hover {
+		.open-button:hover {
 			background-color: #2974BF;
 		}
 
-		.download-button:active {
+		.open-button:active {
 			transform: translateY(1px);
 		}
 
@@ -181,7 +181,7 @@
 				<div class="background-text" id="background-text">TEAMATICA</div>
 				<div class="title-text" id="title-text"></div>
 				<div class="demo-beta-links" id="demo-beta-links"><a href="https://teamatica.org/demo" title="teamatica.org" aria-label="teamatica.org" target="_blank">demo</a><span class="demo-beta-separator">|</span><a href="https://github.com/teamatica/beta" title="GitHub" aria-label="GitHub" target="_blank">beta</a></div>
-				<a href="https://teamatica.org/#3" class="download-button" id="download-button" title="teamatica.org" aria-label="teamatica.org" target="_blank"><span id="download-text"></span></a>
+				<a href="https://teamatica.org/#3" class="open-button" id="open-button" title="teamatica.org" aria-label="teamatica.org" target="_blank"><span id="open-text"></span></a>
 			</div>
 		</div>
 		<div class="text-block">
@@ -230,7 +230,7 @@
 					["Alternative to files in shared network drives", "Up-to-date contact information always and everywhere", "Instant comprehensive search with options and filtering", "Clear and customizable multilingual interface", "Unlimited number of devices used"]
 				],
 				title: "MODERN EMPLOYEE DIRECTORY",
-				download: "OPEN"
+				open: "OPEN"
 			},
 			kk: {
 				headings: ["ҰЙЫМ ҮШІН", "ӘКІМШІ ҮШІН", "ОПЕРАТОР ҮШІН", "ПАЙДАЛАНУШЫ ҮШІН"],
@@ -241,7 +241,7 @@
 					["Ортақ желілік файлообменниктердегі файлдарға балама", "Жаңартылған байланыс мәліметтері әрқашан және барлық жерде", "Опциялары мен сүзгісі бар лездік кешенді іздеу", "Түсінікті және баптауға болатын көптілді интерфейс", "Пайдаланылатын құрылғылардың шексіз саны"]
 				],
 				title: "ЗАМАНАУИ ҚЫЗМЕТКЕРЛЕР АНЫҚТАМАЛЫҒЫ",
-				download: "АШУ"
+				open: "АШУ"
 			},
 			ru: {
 				headings: ["ДЛЯ ОРГАНИЗАЦИИ", "ДЛЯ АДМИНИСТРАТОРА", "ДЛЯ ОПЕРАТОРА", "ДЛЯ ПОЛЬЗОВАТЕЛЯ"],
@@ -252,7 +252,7 @@
 					["Альтернатива файлам в общих сетевых обменниках", "Актуальные контактные сведения всегда и везде", "Мгновенный сквозной поиск с опциями и фильтрацией", "Понятный и настраиваемый мультиязычный интерфейс", "Неограниченное количество используемых устройств"]
 				],
 				title: "СОВРЕМЕННЫЙ СПРАВОЧНИК СОТРУДНИКОВ",
-				download: "ОТКРЫТЬ"
+				open: "ОТКРЫТЬ"
 			},
 			uk: {
 				headings: ["ДЛЯ ОРГАНІЗАЦІЇ", "ДЛЯ АДМІНІСТРАТОРА", "ДЛЯ ОПЕРАТОРА", "ДЛЯ КОРИСТУВАЧА"],
@@ -263,7 +263,7 @@
 					["Альтернатива файлам у спільних мережевих обмінниках", "Актуальні контактні відомості завжди і всюди", "Миттєвий наскрізний пошук з опціями та фільтрацією", "Зрозумілий і налаштовуваний багатомовний інтерфейс", "Необмежена кількість використовуваних пристроїв"]
 				],
 				title: "СУЧАСНИЙ ДОВІДНИК СПІВРОБІТНИКІВ",
-				download: "ВІДКРИТИ"
+				open: "ВІДКРИТИ"
 			}
 		};
 
@@ -297,7 +297,7 @@
 			}
 
 			document.getElementById('title-text').textContent = data.title;
-			document.getElementById('download-text').textContent = data.download;
+			document.getElementById('open-text').textContent = data.open;
 		}
 
 		function loadImage() {
@@ -325,10 +325,10 @@
 			const backgroundText = document.getElementById('background-text');
 			const titleText = document.getElementById('title-text');
 			const demoBetaLinks = document.getElementById('demo-beta-links');
-			const downloadButton = document.getElementById('download-button');
+			const openButton = document.getElementById('open-button');
 			const container = document.querySelector('.container');
 
-			if (!img || !backgroundText || !titleText || !demoBetaLinks || !downloadButton || !container) return;
+			if (!img || !backgroundText || !titleText || !demoBetaLinks || !openButton || !container) return;
 
 			const imgRect = img.getBoundingClientRect();
 			const containerRect = img.parentElement.getBoundingClientRect();
@@ -343,11 +343,11 @@
 			demoBetaLinks.style.top = `${imgRect.bottom - containerRect.top + demoBetaFontSize}px`;
 			demoBetaLinks.style.left = `${imgRect.left - containerRect.left + demoBetaFontSize}px`;
 			const buttonWidth = Math.min(imgRect.width * 0.4, 240);
-			downloadButton.style.width = `${buttonWidth}px`;
-			downloadButton.style.height = `${Math.min(buttonWidth * 0.2, 48)}px`;
-			downloadButton.style.fontSize = `${Math.min(buttonWidth * 0.08, 18)}px`;
-			downloadButton.style.top = window.innerWidth < 1600 ? `${imgRect.bottom - containerRect.top + imgRect.top - titleRect.top}px` : `${imgRect.bottom - containerRect.top + imgRect.top - (titleRect.top + (titleRect.height / 1.5))}px`;
-			downloadButton.style.left = `${imgCenterX - containerRect.left - (buttonWidth / 2)}px`;
+			openButton.style.width = `${buttonWidth}px`;
+			openButton.style.height = `${Math.min(buttonWidth * 0.2, 48)}px`;
+			openButton.style.fontSize = `${Math.min(buttonWidth * 0.08, 18)}px`;
+			openButton.style.top = window.innerWidth < 1600 ? `${imgRect.bottom - containerRect.top + imgRect.top - titleRect.top}px` : `${imgRect.bottom - containerRect.top + imgRect.top - (titleRect.top + (titleRect.height / 1.5))}px`;
+			openButton.style.left = `${imgCenterX - containerRect.left - (buttonWidth / 2)}px`;
 			backgroundText.style.fontSize = `${fontSize - 10}px`;
 			backgroundText.style.filter = `blur(${fontSize / 20}px)`;
 			backgroundText.style.top = `${imgRect.top - containerRect.top - fontSize * 0.95}px`;
