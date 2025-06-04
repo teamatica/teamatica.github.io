@@ -74,24 +74,7 @@
 			font-weight: 100;
 		}
 
-		.demo-beta-links {
-			position: absolute;
-			font-weight: 100;
-			display: flex;
-			align-items: center;
-		}
-
-		.demo-beta-links a {
-			color: #379BFF;
-			text-decoration: none;
-		}
-
-		.demo-beta-links a:hover,
-		.demo-beta-links a:focus {
-			color: #2974BF;
-		}
-
-		.open-button {
+		.demo-button {
 			position: absolute;
 			background-color: #379BFF;
 			color: white;
@@ -103,12 +86,13 @@
 			text-decoration: none;
 		}
 
-		.open-button:hover {
+		.demo-button:hover {
 			background-color: #2974BF;
 		}
 
-		.open-button:active {
+		.demo-button:active {
 			transform: translateY(1px);
+			background-color: #1C4E80;
 		}
 
 		.text-block p::before {
@@ -176,8 +160,7 @@
 				<img src="" width="960" height="640" alt="Teamatica" id="screenshot-img" fetchpriority="high">
 				<div class="background-text" id="background-text">TEAMATICA</div>
 				<div class="title-text" id="title-text"></div>
-				<div class="demo-beta-links" id="demo-beta-links"><a href="https://teamatica.org/demo" title="teamatica.org" aria-label="teamatica.org" target="_blank">demo</a></div>
-				<a href="https://teamatica.org/#3" class="open-button" id="open-button" title="teamatica.org" aria-label="teamatica.org" target="_blank"><span id="open-text"></span></a>
+				<a href="https://teamatica.org/#3" class="demo-button" id="demo-button" title="teamatica.org" aria-label="teamatica.org" target="_blank">demo</a>
 			</div>
 		</div>
 		<div class="text-block">
@@ -232,8 +215,7 @@
 					["Reducing unnecessary and erroneous calls", "Centralized management and secure delivery", "Controlled access to personal data", "Filling with a simple <a href=\"https://docs.google.com/spreadsheets/d/1blmkoMY4zvIk2-W_3JbkAdRwXXvL4H-QZdqp0UC5u44\" title=\"Google Sheets\" aria-label=\"Google Sheets\" target=\"_blank\">XLSX</a> spreadsheet", "Automatic error and typo detection"],
 					["Alternative to files in shared network drives", "Up-to-date contact information always and everywhere", "Instant comprehensive search with options and filtering", "Clear and customizable multilingual interface", "Unlimited number of devices used"]
 				],
-				title: "MODERN EMPLOYEE DIRECTORY",
-				open: "OPEN"
+				title: "MODERN EMPLOYEE DIRECTORY"
 			},
 			kk: {
 				headings: ["ҰЙЫМ ҮШІН", "ӘКІМШІ ҮШІН", "ОПЕРАТОР ҮШІН", "ПАЙДАЛАНУШЫ ҮШІН"],
@@ -243,8 +225,7 @@
 					["Артық және қате қоңыраулар санын азайту", "Орталықтандырылған басқару және қорғалған жеткізу", "Жеке деректерге бақыланатын қол жеткізу", "Қарапайым <a href=\"https://docs.google.com/spreadsheets/d/1y-i8sAEFsT0NVi8tqAQbMXdXAeK1_vFPhm1NxreuDYc\" title=\"Google Sheets\" aria-label=\"Google Sheets\" target=\"_blank\">XLSX</a> кестесімен толтыру", "Қателер мен опечаткаларды автоматты анықтау"],
 					["Ортақ желілік файлообменниктердегі файлдарға балама", "Жаңартылған байланыс мәліметтері әрқашан және барлық жерде", "Опциялары мен сүзгісі бар лездік кешенді іздеу", "Түсінікті және баптауға болатын көптілді интерфейс", "Пайдаланылатын құрылғылардың шексіз саны"]
 				],
-				title: "ЗАМАНАУИ ҚЫЗМЕТКЕРЛЕР АНЫҚТАМАЛЫҒЫ",
-				open: "АШУ"
+				title: "ЗАМАНАУИ ҚЫЗМЕТКЕРЛЕР АНЫҚТАМАЛЫҒЫ"
 			},
 			ru: {
 				headings: ["ДЛЯ ОРГАНИЗАЦИИ", "ДЛЯ АДМИНИСТРАТОРА", "ДЛЯ ОПЕРАТОРА", "ДЛЯ ПОЛЬЗОВАТЕЛЯ"],
@@ -254,8 +235,7 @@
 					["Уменьшение объёма лишних и ошибочных звонков", "Централизованное управление и защищённая доставка", "Контролируемый доступ к персональным данным", "Заполнение с помощью самой обычной <a href=\"https://docs.google.com/spreadsheets/d/1vwpwlGWMeXw9istE-t38QPcX3pXIOZ6eXN0GfNym7cc\" title=\"Google Sheets\" aria-label=\"Google Sheets\" target=\"_blank\">XLSX</a>-таблицы", "Автоматическое обнаружение ошибок и опечаток"],
 					["Альтернатива файлам в общих сетевых обменниках", "Актуальные контактные сведения всегда и везде", "Мгновенный сквозной поиск с опциями и фильтрацией", "Понятный и настраиваемый мультиязычный интерфейс", "Неограниченное количество используемых устройств"]
 				],
-				title: "СОВРЕМЕННЫЙ СПРАВОЧНИК СОТРУДНИКОВ",
-				open: "ОТКРЫТЬ"
+				title: "СОВРЕМЕННЫЙ СПРАВОЧНИК СОТРУДНИКОВ"
 			},
 			uk: {
 				headings: ["ДЛЯ ОРГАНІЗАЦІЇ", "ДЛЯ АДМІНІСТРАТОРА", "ДЛЯ ОПЕРАТОРА", "ДЛЯ КОРИСТУВАЧА"],
@@ -265,8 +245,7 @@
 					["Зменшення обсягу зайвих і помилкових дзвінків", "Централізоване управління і захищена доставка", "Контрольований доступ до персональних даних", "Заповнення за допомогою звичайної <a href=\"https://docs.google.com/spreadsheets/d/1cGrhJRyjJUpq8SFu1KIIC2ojSPdhUIRapINo9j7SfvY\" title=\"Google Sheets\" aria-label=\"Google Sheets\" target=\"_blank\">XLSX</a> таблиці", "Автоматичне виявлення помилок і друкарських помилок"],
 					["Альтернатива файлам у спільних мережевих обмінниках", "Актуальні контактні відомості завжди і всюди", "Миттєвий наскрізний пошук з опціями та фільтрацією", "Зрозумілий і налаштовуваний багатомовний інтерфейс", "Необмежена кількість використовуваних пристроїв"]
 				],
-				title: "СУЧАСНИЙ ДОВІДНИК СПІВРОБІТНИКІВ",
-				open: "ВІДКРИТИ"
+				title: "СУЧАСНИЙ ДОВІДНИК СПІВРОБІТНИКІВ"
 			}
 		};
 
@@ -300,7 +279,6 @@
 			}
 
 			document.getElementById('title-text').textContent = data.title;
-			document.getElementById('open-text').textContent = data.open;
 		}
 
 		function loadImage() {
@@ -327,11 +305,10 @@
 			const img = document.getElementById('screenshot-img');
 			const backgroundText = document.getElementById('background-text');
 			const titleText = document.getElementById('title-text');
-			const demoBetaLinks = document.getElementById('demo-beta-links');
-			const openButton = document.getElementById('open-button');
+			const demoButton = document.getElementById('demo-button');
 			const container = document.querySelector('.container');
 
-			if (!img || !backgroundText || !titleText || !demoBetaLinks || !openButton || !container) return;
+			if (!img || !backgroundText || !titleText || !demoButton || !container) return;
 
 			const imgRect = img.getBoundingClientRect();
 			const containerRect = img.parentElement.getBoundingClientRect();
@@ -341,16 +318,12 @@
 			const titleRect = titleText.getBoundingClientRect();
 			const imgCenterX = imgRect.left + (imgRect.width / 2);
 			titleText.style.left = `${imgCenterX - containerRect.left - (titleRect.width / 2)}px`;
-			const demoBetaFontSize = imgRect.width / 60;
-			demoBetaLinks.style.fontSize = `${demoBetaFontSize}px`;
-			demoBetaLinks.style.top = `${imgRect.bottom - containerRect.top + demoBetaFontSize}px`;
-			demoBetaLinks.style.left = `${imgRect.left - containerRect.left + demoBetaFontSize}px`;
-			const buttonWidth = Math.min(imgRect.width * 0.4, 240);
-			openButton.style.width = `${buttonWidth}px`;
-			openButton.style.height = `${Math.min(buttonWidth * 0.2, 48)}px`;
-			openButton.style.fontSize = `${Math.min(buttonWidth * 0.08, 18)}px`;
-			openButton.style.top = window.innerWidth < 1600 ? `${imgRect.bottom - containerRect.top + imgRect.top - titleRect.top}px` : `${imgRect.bottom - containerRect.top + imgRect.top - (titleRect.top + (titleRect.height / 1.5))}px`;
-			openButton.style.left = `${imgCenterX - containerRect.left - (buttonWidth / 2)}px`;
+			const buttonWidth = Math.min(imgRect.width * 0.4, 194);
+			demoButton.style.width = `${buttonWidth}px`;
+			demoButton.style.height = `${Math.min(buttonWidth * 0.2, 48)}px`;
+			demoButton.style.fontSize = `${Math.min(buttonWidth * 0.08, 18)}px`;
+			demoButton.style.top = window.innerWidth < 1600 ? `${imgRect.bottom - containerRect.top + imgRect.top - titleRect.top}px` : `${imgRect.bottom - containerRect.top + imgRect.top - (titleRect.top + (titleRect.height / 1.5))}px`;
+			demoButton.style.left = `${imgCenterX - containerRect.left - (buttonWidth / 2)}px`;
 			backgroundText.style.fontSize = `${fontSize - 10}px`;
 			backgroundText.style.filter = `blur(${fontSize / 20}px)`;
 			backgroundText.style.top = `${imgRect.top - containerRect.top - fontSize * 0.95}px`;
