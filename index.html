@@ -84,6 +84,7 @@
 			align-items: center;
 			justify-content: center;
 			text-decoration: none;
+			line-height: 90%;
 		}
 
 		.demo-button:hover {
@@ -322,7 +323,7 @@
 			const buttonWidth = Math.min(imgRect.width * 0.4, 194);
 			demoButton.style.width = `${buttonWidth}px`;
 			demoButton.style.height = `${Math.min(buttonWidth * 0.2, 48)}px`;
-			demoButton.style.fontSize = `${Math.min(buttonWidth * 0.2, 30)}px`;
+			demoButton.style.fontSize = `${Math.min(buttonWidth * 0.11, 24)}px`;
 			demoButton.style.top = window.innerWidth < 1600 ? `${imgRect.bottom - containerRect.top + imgRect.top - titleRect.top}px` : `${imgRect.bottom - containerRect.top + imgRect.top - (titleRect.top + (titleRect.height / 1.5))}px`;
 			demoButton.style.left = `${imgCenterX - containerRect.left - (buttonWidth / 2)}px`;
 			backgroundText.style.fontSize = `${fontSize - 10}px`;
