@@ -1857,6 +1857,7 @@
 		}
 		else {
 			cursor.style.visibility = "hidden";
+			if (isHoveringGears) hideGears();
 		}
 		let effectStrength = 0;
 		if (scrollY >= scaleUpStart && scrollY <= scaleUpEnd) {
@@ -1917,11 +1918,13 @@
 		for (let i = 0; i < hintsConfig.length; i++) {
 			const conf = hintsConfig[i];
 			if (conf.startScroll === undefined) continue;
-			const isFinished = conf.eraseScroll && scrollY > (conf.eraseScroll + lineDuration + (conf.textLen * charUnit));
+			const isFinished = conf.eraseScroll && scrollY > (conf.eraseScroll + lineDuration + (conf.textLen * charUnit) + 1);
 			if (scrollY < conf.startScroll || isFinished) {
-				if (conf.elemLine.style.opacity !== "0") {
+				if (conf.elemLine.style.visibility !== "hidden") {
 					conf.elemLine.style.opacity = "0";
+					conf.elemLine.style.visibility = "hidden";
 					conf.elemText.style.opacity = "0";
+					conf.elemText.style.visibility = "hidden";
 				}
 				continue;
 			}
@@ -1937,34 +1940,31 @@
 			else charsToShow = Math.min(charsToShow, conf.textLen);
 			const isLineVisible = lineProgress > 0.001;
 			conf.elemLine.style.opacity = isLineVisible ? 1 : 0;
+			conf.elemLine.style.visibility = isLineVisible ? "visible" : "hidden";
 			if (isLineVisible) {
-				const posCalc = hintPositions[conf.id];
 				const {
 					x: startX,
 					y: startY,
 					dy = 0
-				} = posCalc(s, metrics);
+				} = hintPositions[conf.id](s, metrics);
 				conf.elemLine.style.transform = `translate3d(${startX}px,${startY}px,0)`;
 				const dir = conf.side === "left" ? -1 : 1;
 				const cDir = conf.curveDir || 1;
 				const baseCpX = quarterW * dir * lineProgress;
 				const baseCpY = fifthW * cDir * lineProgress;
-				const targetEndX = (quarterW * dir) + (ninthW * dir - (quarterW * dir)) * lineProgress;
-				const targetEndY = (fifthW * cDir) + ((metrics.quarterW * cDir) - (fifthW * cDir)) * lineProgress;
-				const baseEndX = baseCpX + (targetEndX - baseCpX) * lineProgress;
-				const baseEndY = baseCpY + (targetEndY - baseCpY) * lineProgress;
 				const yOffset = dy * (1 - lineProgress);
 				const curCpX = baseCpX;
 				const curCpY = baseCpY + yOffset;
-				const curEndX = baseEndX;
-				const curEndY = baseEndY + yOffset;
-				const pathD = `M0,${dy}Q${curCpX},${curCpY} ${curEndX},${curEndY}`;
+				const curEndX = baseCpX + (((quarterW * dir) + (ninthW * dir - (quarterW * dir)) * lineProgress) - baseCpX) * lineProgress;
+				const curEndY = baseCpY + (((fifthW * cDir) + ((metrics.quarterW * cDir) - (fifthW * cDir)) * lineProgress) - baseCpY) * lineProgress + yOffset;
+				const pathD = `M0,${dy}Q${baseCpX},${baseCpY + yOffset} ${curEndX},${curEndY}`;
 				if (conf.prevD !== pathD) {
 					conf.elemPath.setAttribute("d", pathD);
 					conf.prevD = pathD;
 				}
 				const isTextVisible = charsToShow > 0 || (localScroll > lineDuration && lineProgress > 0.1);
 				conf.elemText.style.opacity = isTextVisible ? 1 : 0;
+				conf.elemText.style.visibility = isTextVisible ? "visible" : "hidden";
 				if (isTextVisible) {
 					if (conf.prevLen !== charsToShow) {
 						conf.elemText.textContent = conf.text.substring(0, charsToShow);
@@ -1977,12 +1977,10 @@
 					}
 					const isLeft = conf.side === "left";
 					const textX = startX + curEndX + (isLeft ? -offset : offset);
-					const textY = startY + curEndY;
-					conf.elemText.style.transform = `translate3d(${textX}px,${textY}px,0) translate(${isLeft ? -100 : 0}%,-50%)`;
+					conf.elemText.style.transform = `translate3d(${textX}px,${startY + curEndY}px,0) translate(${isLeft ? -100 : 0}%,-50%)`;
 					conf.elemText.style.textAlign = isLeft ? "right" : "left";
 					const absTextX = iconLeft + textX;
-					const maxW = Math.max(minW, isLeft ? absTextX - edgeGap : cachedW - absTextX - edgeGap);
-					conf.elemText.style.maxWidth = maxW + "px";
+					conf.elemText.style.maxWidth = Math.max(minW, isLeft ? absTextX - edgeGap : cachedW - absTextX - edgeGap) + "px";
 				}
 			}
 		}
@@ -2094,12 +2092,10 @@
 			const myEntryStart = stepsEntryStart + (i * stepStagger);
 			let entryProg = 0;
 			if (scrollY > myEntryStart) entryProg = stepsEntryDuration > 0 ? Math.min(1, (scrollY - myEntryStart) / stepsEntryDuration) : 1;
-			const myExitEnd = (stepExitStart + stepExitDuration) + (i * stepStagger);
-			const myExitStart = myExitEnd - stepExitDuration;
+			const myExitStart = (stepExitStart + stepExitDuration) + (i * stepStagger) - stepExitDuration;
 			let exitProg = 0;
 			if (scrollY > myExitStart) exitProg = stepExitDuration > 0 ? Math.min(1, (scrollY - myExitStart) / stepExitDuration) : 1;
-			const posFactor = clamp(entryProg - exitProg);
-			el.style.transform = `translateX(${lerp(-el.offsetWidth, rem, posFactor)}px)`;
+			el.style.transform = `translateX(${lerp(-el.offsetWidth, rem, clamp(entryProg - exitProg))}px)`;
 			el.style.opacity = 1;
 			const range = ranges[i];
 			let fillProgress = 0;
@@ -2264,9 +2260,7 @@
 	else {
 		cursorContainer.addEventListener("click", (e) => {
 			e.stopPropagation();
-			if (isHoveringGears) {
-				hideGears();
-			}
+			if (isHoveringGears) hideGears();
 			else showGears();
 		});
 		window.addEventListener("click", () => {
