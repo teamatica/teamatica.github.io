@@ -1,357 +1,2276 @@
-<!-- special thanks to: any.run, beautifier.io, chatgpt.com, chat.qwen.ai, claude.ai, ezgif.com, pagespeed.web.dev, spreadsheet.new, virustotal.com, youtube.com -->
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-	<meta charset="utf-8">
-	<meta http-equiv="Cache-Control" content="public, max-age=3600">
-	<title>Teamatica</title>
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Teamatica — modern employee directory">
-	<link rel="icon" type="image/x-icon" href="/favicon.ico">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Scrollytelling</title>
+	<link rel="icon" type="image/x-icon" href="favicon.v1.ico">
 	<style>
-		* {
-			box-sizing: border-box;
-			margin: 0;
-			padding: 0;
+	:root {
+		--bg: #202020;
+		--fg: #ffffff;
+		--hint: #ff4500;
+		--icon: #1f7144;
+		--server: #1c4e80;
+		--status: #00ff00;
+		--window: #379bff;
+	}
+
+	html,
+	body {
+		-webkit-tap-highlight-color: transparent;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		background: var(--bg);
+		color: var(--fg);
+		font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+		font-size: 16px;
+		height: 100%;
+		margin: 0;
+		min-height: 100dvh;
+		user-select: none;
+	}
+
+	svg {
+		-webkit-font-smoothing: subpixel-antialiased;
+		backface-visibility: hidden;
+		display: block;
+		height: auto;
+		overflow: visible;
+		position: relative;
+		width: 100%;
+		will-change: filter, transform;
+		z-index: 3;
+	}
+
+	.app,
+	.server {
+		contain: layout style paint;
+		left: 50%;
+		position: absolute;
+		top: 50%;
+		visibility: hidden;
+		width: min(40rem, 92vw);
+		will-change: transform;
+		z-index: 5;
+	}
+
+	.app {
+		aspect-ratio: 4 / 3;
+		background: var(--window);
+		transform: translate(-50%, -50%) translate3d(0, 50vh, 0);
+	}
+
+	.app-fake-close {
+		height: 1.25rem;
+		position: absolute;
+		right: 0.69rem;
+		top: 0.69rem;
+		width: 1.25rem;
+	}
+
+	.app-fake-close svg {
+		height: 100%;
+		width: 100%;
+	}
+
+	.cursor-item {
+		cursor: default;
+		height: 2.375rem;
+		left: 0;
+		pointer-events: auto;
+		position: fixed;
+		top: 0;
+		transform: translate3d(80vw, -2.375rem, 0);
+		visibility: hidden;
+		width: 1.5rem;
+		will-change: transform;
+		z-index: 9;
+	}
+
+	.cursor-item svg {
+		height: 100%;
+		width: 100%;
+	}
+
+	.final-link {
+		--x1: 50%;
+		--x2: 50%;
+		--y1: 50%;
+		--y2: 50%;
+		font-size: clamp(1.5rem, 5vw, 2.5rem);
+		font-weight: 900;
+		left: 50%;
+		position: fixed;
+		text-decoration: none;
+		top: 0;
+		transform: translate(-50%, -50%) translate3d(0, 100vh, 0);
+		transition: filter 1s ease;
+		visibility: hidden;
+		will-change: transform;
+	}
+
+	.final-link:hover {
+		filter: brightness(1.5);
+	}
+
+	.final-link span {
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-attachment: scroll;
+		background-clip: text;
+		background-image: radial-gradient(circle at var(--x1) var(--y1), var(--fg) 0%, transparent 45%), radial-gradient(circle at var(--x2) var(--y2), var(--window) 0%, transparent 45%), linear-gradient(var(--server), var(--server));
+		background-repeat: no-repeat;
+		background-size: 100% 100%;
+		color: transparent;
+		display: block;
+	}
+
+	.hint-line {
+		height: 1px;
+		left: 0;
+		opacity: 0;
+		position: absolute;
+		top: 0;
+		transform-origin: left center;
+		will-change: opacity, transform;
+		z-index: 4;
+	}
+
+	.hint-text {
+		-webkit-font-smoothing: subpixel-antialiased;
+		backface-visibility: hidden;
+		color: var(--hint);
+		contain: layout;
+		font-size: 1rem;
+		left: 0;
+		line-height: 1;
+		max-width: 15rem;
+		opacity: 0;
+		overflow-wrap: break-word;
+		position: absolute;
+		top: 0;
+		width: max-content;
+		will-change: opacity, transform;
+		word-break: break-word;
+		z-index: 4;
+	}
+
+	.hint-text::after {
+		color: var(--hint);
+		content: "";
+		display: inline-block;
+	}
+
+	.hint-text.typing::after {
+		animation: caret-blink 1s step-end infinite;
+		content: "_";
+		font-weight: 900;
+	}
+
+	.intro-hint-text {
+		color: var(--hint);
+		opacity: 1;
+		white-space: pre-wrap;
+	}
+
+	.intro-hint-text.typing::after {
+		animation: caret-blink 1s step-end infinite;
+		content: "_";
+	}
+
+	.intro-hint-wrapper {
+		height: 100%;
+		left: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;
+	}
+
+	.list {
+		height: 100%;
+		left: 0;
+		position: absolute;
+		top: 0;
+		width: 100%;
+		z-index: 1;
+	}
+
+	.list.overlay-white {
+		color: #ffffff !important;
+		will-change: clip-path;
+		z-index: 2;
+	}
+
+	.logo-container {
+		display: grid;
+		grid-template-columns: repeat(3, 1rem);
+		grid-template-rows: repeat(3, 1rem);
+		height: 3rem;
+		position: relative;
+		width: 3rem;
+	}
+
+	.logo-item {
+		opacity: 0;
+		will-change: opacity, transform;
+	}
+
+	.logo-svg {
+		height: 1rem;
+		width: 1rem;
+	}
+
+	.name-item {
+		backface-visibility: hidden;
+		color: inherit;
+		contain: layout paint style;
+		font-size: 5rem;
+		left: 0;
+		position: absolute;
+		top: 0;
+		transform-origin: left center;
+		white-space: nowrap;
+		will-change: transform;
+	}
+
+	.progress-container {
+		left: 0;
+		opacity: 0;
+		overflow: hidden;
+		position: absolute;
+		top: 100%;
+		width: 100%;
+		will-change: opacity;
+		z-index: 5;
+	}
+
+	.progress-fill {
+		background: #ffffff;
+		height: 100%;
+		width: 100%;
+		will-change: transform;
+	}
+
+	.scrolly {
+		min-height: 1500vh;
+		padding-bottom: 100vh;
+		position: relative;
+	}
+
+	.server {
+		align-items: flex-start;
+		aspect-ratio: 8 / 3;
+		background: var(--server);
+		display: flex;
+		justify-content: flex-start;
+		transform: translate(-50%, -50%) translate3d(0, 100vh, 0);
+	}
+
+	.server-indicator {
+		animation: pulse 2s infinite ease-in-out;
+		background-color: var(--status);
+		border-radius: 50%;
+		box-shadow: 0 0 1rem var(--status);
+		height: 1rem;
+		margin: 1.5rem;
+		width: 1rem;
+	}
+
+	.side-logo {
+		color: var(--server);
+		font-size: 0.75rem;
+		left: -1rem;
+		position: fixed;
+		text-decoration: none;
+		top: 50svh;
+		transform: translate(-50%, -50%) rotate(-90deg);
+		transition: color 1s ease;
+		z-index: 8;
+	}
+
+	.side-logo:hover {
+		color: var(--fg);
+	}
+
+	.stage {
+		contain: layout style;
+		display: flex;
+		height: 100vh;
+		justify-content: center;
+		overflow: hidden;
+		position: sticky;
+		top: 0;
+		width: 100%;
+	}
+
+	.stage-content {
+		align-items: center;
+		display: flex;
+		height: 100vh;
+		height: 100svh;
+		justify-content: center;
+		position: relative;
+		width: 100%;
+	}
+
+	.steps-container {
+		display: flex;
+		flex-direction: column;
+		left: 0;
+		pointer-events: none;
+		position: fixed;
+		top: 1rem;
+		z-index: 9;
+	}
+
+	.step-check-path {
+		fill: none;
+		stroke: var(--status);
+		stroke-dasharray: 24;
+		stroke-dashoffset: 24;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2;
+		transition: stroke-dashoffset 0.5s ease;
+	}
+
+	.step-check-svg {
+		display: inline-block;
+		height: 1.5rem;
+		margin-left: 0.2rem;
+		overflow: visible;
+		position: relative;
+		top: -0.1rem;
+		vertical-align: middle;
+		width: 1.5rem;
+	}
+
+	.step-fill {
+		clip-path: inset(0 100% 0 0);
+		color: var(--fg);
+		left: 0;
+		opacity: 1;
+		position: absolute;
+		top: 0;
+		will-change: clip-path;
+	}
+
+	.step-item {
+		color: var(--fg);
+		font-size: 0.85rem;
+		font-weight: 500;
+		transform: translateX(-100%);
+		white-space: nowrap;
+		will-change: transform;
+	}
+
+	.step-item.is-done .step-check-path {
+		stroke-dashoffset: 0;
+		transition: stroke-dashoffset 1s ease;
+	}
+
+	.step-base {
+		opacity: 0.2;
+	}
+
+	.step-text-wrap {
+		display: inline-block;
+		position: relative;
+	}
+
+	.svg-wrap {
+		contain: layout style;
+		height: auto;
+		position: relative;
+		transform: translate3d(0, 60vh, 0);
+		width: min(25vmin, 10rem);
+		will-change: transform;
+		z-index: 6;
+	}
+
+	.svg-wrap svg {
+		will-change: filter, transform;
+	}
+
+	#cursorPath {
+		transform-origin: center center;
+		will-change: d, fill, opacity;
+	}
+
+	#gears {
+		opacity: 0;
+		visibility: hidden;
+		will-change: opacity;
+	}
+
+	#gearBottom,
+	#gearTop {
+		will-change: transform;
+	}
+
+	#intro-hint {
+		height: 100%;
+		left: 0;
+		overflow: hidden;
+		pointer-events: none;
+		position: fixed;
+		top: 0;
+		width: 100%;
+	}
+
+	#loader {
+		align-items: center;
+		display: flex;
+		height: 100vh;
+		height: 100svh;
+		justify-content: center;
+		left: 0;
+		position: fixed;
+		top: 0;
+		width: 100%;
+		z-index: 7;
+	}
+
+	@keyframes caret-blink {
+
+		0%,
+		100% {
+			opacity: 1;
 		}
 
-		body {
-			font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-			overflow: auto;
-			min-height: 100vh;
-			position: relative;
-			display: flex;
-			justify-content: center;
-			align-items: flex-start;
+		50% {
+			opacity: 0;
+		}
+	}
+
+	@keyframes pulse {
+
+		0%,
+		100% {
+			opacity: 1;
 		}
 
-		.container {
-			display: flex;
-			height: 100vh;
-			max-width: 1800px;
-			position: relative;
+		50% {
+			opacity: 0.25;
+		}
+	}
+
+	@media (min-width: 2000px) {
+		html {
+			font-size: 24px;
+		}
+	}
+
+	@media (min-width: 3000px) {
+		html {
+			font-size: 32px;
+		}
+	}
+
+	@media (min-width: 4000px) {
+		html {
+			font-size: 48px;
+		}
+	}
+
+	@media (max-height: 600px) and (orientation: landscape) {
+		.app {
+			aspect-ratio: 4 / 3;
+			height: 60vh !important;
+			left: 50%;
+			top: 50%;
+			width: auto !important;
 		}
 
-		.section {
-			margin-bottom: 0.4em;
+		.server {
+			aspect-ratio: 8 / 3;
+			height: 30vh !important;
+			left: 50%;
+			top: 50%;
+			width: auto !important;
 		}
+	}
 
-		.screenshot {
-			flex: 0 0 auto;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			padding-right: 2em;
-			position: relative;
+	@media (prefers-color-scheme: light) {
+		:root {
+			--bg: #ffffff;
+			--fg: #202020;
 		}
-
-		.screenshot-shadow {
-			display: inline-block;
-			box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-			position: relative;
-		}
-
-		.screenshot img {
-			max-width: 100%;
-			max-height: 70vh;
-			width: auto;
-			height: auto;
-			object-fit: contain;
-			display: block;
-		}
-
-		.background-text {
-			position: absolute;
-			font-weight: 900;
-			color: #379BFF;
-			z-index: -1;
-		}
-
-		.title-text {
-			position: absolute;
-			font-weight: 100;
-		}
-
-		.demo-button {
-			position: absolute;
-			background-color: #379BFF;
-			color: white;
-			border: none;
-			cursor: pointer;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			text-decoration: none;
-			line-height: 90%;
-		}
-
-		.demo-button:hover {
-			background-color: #2974BF;
-		}
-
-		.demo-button:active {
-			transform: translateY(1px);
-			background-color: #1C4E80;
-		}
-
-		.text-block p::before {
-			content: '•';
-			margin-right: 0.3em;
-		}
-
-		.text-block {
-			flex-grow: 0;
-			flex-shrink: 1;
-			flex-basis: auto;
-			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			font-weight: 100;
-			white-space: nowrap;
-			font-size: clamp(0.01rem, min(1.5vw, 2.8vh), 1.4rem);
-		}
-
-		.text-block a {
-			color: #379BFF;
-			text-decoration: none;
-			font-weight: 100;
-		}
-
-		.text-block a:hover,
-		.text-block a:focus {
-			color: #2974BF;
-		}
-
-		p {
-			margin-left: 0.5em;
-			line-height: 1.4em;
-		}
-
-		@media (max-width: 1599px) {
-			.container {
-				flex-direction: column;
-			}
-
-			.screenshot {
-				padding: 0;
-			}
-
-			.text-block {
-				padding: 8em 1em 3em;
-				font-size: clamp(0.5rem, 2.8vw, 1.4rem);
-				justify-content: flex-start;
-			}
-		}
-
-		@media (prefers-color-scheme: dark) {
-			body {
-				background-color: #202020;
-				color: #FFFFFF;
-			}
-		}
+	}
 	</style>
 </head>
 
 <body>
-	<div class="container">
-		<div class="screenshot">
-			<div class="screenshot-shadow">
-				<img src="" width="960" height="640" title="Teamatica" alt="Teamatica" id="screenshot-img" fetchpriority="high">
-				<div class="background-text" id="background-text">TEAMATICA</div>
-				<div class="title-text" id="title-text"></div>
-				<a href="https://teamatica.org/#4" class="demo-button" id="demo-button" title="teamatica.org" aria-label="teamatica.org" target="_blank">↓</a>
-			</div>
-		</div>
-		<div class="text-block">
-			<div class="section">
-				<h3 id="head-1"></h3>
-				<p id="h1p1"></p>
-				<p id="h1p2"></p>
-				<p id="h1p3"></p>
-				<p id="h1p4"></p>
-				<p id="h1p5"></p>
-			</div>
-			<div class="section">
-				<h3 id="head-2"></h3>
-				<p id="h2p1"></p>
-				<p id="h2p2"></p>
-				<p id="h2p3"></p>
-				<p id="h2p4"></p>
-				<p id="h2p5"></p>
-			</div>
-			<div class="section">
-				<h3 id="head-3"></h3>
-				<p id="h3p1"></p>
-				<p id="h3p2"></p>
-				<p id="h3p3"></p>
-				<p id="h3p4"></p>
-				<p id="h3p5"></p>
-			</div>
-			<div class="section">
-				<h3 id="head-4"></h3>
-				<p id="h4p1"></p>
-				<p id="h4p2"></p>
-				<p id="h4p3"></p>
-				<p id="h4p4"></p>
-				<p id="h4p5"></p>
-			</div>
-		</div>
+	<a href="https://github.com/teamatica" target="_blank" class="side-logo" aria-label="GitHub" title="GitHub">Teamatica</a>
+	<div id="intro-hint"></div>
+	<div id="loader">
+		<div class="logo-container"></div>
 	</div>
+	<div id="cursor" class="cursor-item">
+		<svg viewBox="0 0 388 620">
+			<path id="cursorPath" fill="var(--hint)" d="m50 11 330 337c11 11 11 31 0 42l-102 53 28 136c0 12-9 24-20 28l-31 11q-17 5-29-6l-78-117-119 42c-15 0-29-15-29-30V32C0-2 31-9 50 11" />
+			<g id="gears">
+				<path id="gearTop" fill="var(--hint)" d="M213 287a9 9 0 0 0 6-11l-8-33 2-6 20-19 6-1 32 9q8 2 12-5l9-20a9 9 0 0 0-4-13l-28-18q-3-2-3-5l1-28q0-3 3-5l30-16q7-4 4-12l-8-21a9 9 0 0 0-11-6l-33 8q-3 1-6-2l-19-20q-2-3-1-6l9-32q2-8-5-12l-20-9q-8-2-13 4l-18 28-5 3-28-1-5-3-16-30a9 9 0 0 0-12-4L83 9a9 9 0 0 0-6 11l8 33-2 6-20 19-6 1-32-9q-8-2-12 5L4 95q-2 8 4 13l28 18 3 5-1 28-3 5-30 16q-6 4-4 12l8 21a9 9 0 0 0 11 6l33-8 6 2 19 20 1 6-9 32q-2 8 5 12l20 9a9 9 0 0 0 13-4l18-28q1-3 5-3l28 1 5 3 16 30q4 7 12 4zm-47-90a52 52 0 0 1-67-31 52 52 0 0 1 31-67q20-7 39 2a52 52 0 0 1 26 68q-8 20-29 28" />
+				<path id="gearBottom" fill="var(--hint)" d="m381 488-35-21-3-6v-34a7 7 0 0 1 4-6l35-21q8-6 5-14l-10-25q-4-10-14-7l-39 10a7 7 0 0 1-7-2l-24-25-2-6 11-40q3-9-7-14l-24-10a11 11 0 0 0-15 5l-21 35-6 3h-34a7 7 0 0 1-6-4l-21-35q-5-8-14-5l-25 10q-9 4-7 14l10 39a7 7 0 0 1-2 7l-25 24q-2 2-6 2l-40-11a11 11 0 0 0-14 7l-10 24q-4 10 5 15l35 21q3 2 3 6v34a7 7 0 0 1-4 6l-35 21q-8 6-5 14l10 25q4 9 14 7l39-10q4 0 7 2l24 25 2 6-11 40q-2 9 7 14l24 10q10 4 15-5l21-35 6-3h34a7 7 0 0 1 6 4l21 35q5 8 14 5l25-10a11 11 0 0 0 7-14l-10-39a7 7 0 0 1 2-7l25-24 6-2 40 11q9 3 14-7l10-24a11 11 0 0 0-5-15m-147 13a63 63 0 0 1-82-35 63 63 0 0 1 35-82 62 62 0 0 1 82 35 62 62 0 0 1-35 82" />
+			</g>
+		</svg>
+	</div>
+	<main class="scrolly">
+		<div class="stage">
+			<div class="stage-content">
+				<div class="app" id="operatorWindow">
+					<div class="app-fake-close">
+						<svg viewBox="0 0 20 20">
+							<path d="M16 4L4 16M4 4l12 12" fill="none" stroke="white" aria-hidden="true" stroke-width="1"></path>
+						</svg>
+					</div>
+				</div>
+				<div class="server" id="serverWindow">
+					<div class="server-indicator"></div>
+				</div>
+				<div class="app" id="userWindow">
+					<div class="app-fake-close">
+						<svg viewBox="0 0 20 20">
+							<path d="M16 4L4 16M4 4l12 12" fill="none" stroke="white" aria-hidden="true" stroke-width="1"></path>
+						</svg>
+					</div>
+				</div>
+				<div class="svg-wrap" id="idWrap">
+					<div class="list" id="namesContainer"></div>
+					<div class="progress-container" id="progressContainer">
+						<div class="progress-fill" id="progressFill"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</main>
+	<a href="https://teamatica.org" target="_blank" class="final-link" id="finalLink" aria-label="Teamatica" title="Teamatica"><span>teamatica.org</span></a>
+	<script src="libs/gsap/3.13.0/gsap.min.js"></script>
+	<script src="libs/gsap/3.13.0/MorphSVGPlugin.min.js"></script>
 	<script>
-		const urls = {
-			ms: '<a href="https://apps.microsoft.com/detail/xp8lvlmtsbd7wf" title="Microsoft Store" aria-label="Microsoft Store" target="_blank">Microsoft Store</a>',
-			wg: '<a href="https://teamatica.org/usage/administrator/#3" title="WinGet" aria-label="WinGet" target="_blank">WinGet</a>',
-			ar: '<a href="https://app.any.run/tasks/8a055c46-f0f9-4a2d-9ff4-78f37e323493" title="ANY.RUN" aria-label="ANY.RUN" target="_blank">ANY.RUN</a>',
-			sp: '<a href="https://softpedia.com/get/Office-tools/Other-Office-Tools/Teamatica.shtml#status" title="Softpedia" aria-label="Softpedia" target="_blank">Softpedia</a>',
-			vt: '<a href="https://virustotal.com/gui/file/8f6c9ab2179595bb26a0d6d45634b119405641e90f639f7e7e7783761f53e6a9" title="VirusTotal" aria-label="VirusTotal" target="_blank">VirusTotal</a>'
-		};
-
-		const translations = {
-			en: {
-				headings: ["FOR ORGANIZATION", "FOR ADMINISTRATOR", "FOR OPERATOR", "FOR USER"],
-				paragraphs: [
-					["Privacy and confidentiality of all information", "Only a website and network are required", "Unified common system with one responsible person", "No unauthorized connections", "Absolute independence and free exit"],
-					[`Safe installation from ${urls.ms} and ${urls.wg}`, `Clean reputation in ${urls.ar} + ${urls.sp} + ${urls.vt}`, "<a href=\"https://google.com/search?q=what+is+on-premises\" target=\"_blank\" title=\"Google\" aria-label=\"Google\">On-premises</a> on any site with <a href=\"https://google.com/search?q=what+is+TLS+protocol\" target=\"_blank\" title=\"Google\" aria-label=\"Google\">TLS</a> and <a href=\"https://github.com/teamatica/backend/blob/main/en/%E2%9C%85%20PHP/index.php\" title=\"GitHub\" aria-label=\"GitHub\" target=\"_blank\">PHP</a> support", "Deployment from scratch in <a href=\"https://youtu.be/jWLrcu5TxJA\" title=\"YouTube\" aria-label=\"YouTube\" target=\"_blank\">minutes with just a few clicks</a>", "Full service automation capabilities"],
-					["Reducing unnecessary and erroneous calls", "Centralized management and secure delivery", "Controlled access to personal data", "Filling with a simple <a href=\"https://docs.google.com/spreadsheets/d/1blmkoMY4zvIk2-W_3JbkAdRwXXvL4H-QZdqp0UC5u44\" title=\"Google Sheets\" aria-label=\"Google Sheets\" target=\"_blank\">XLSX</a> spreadsheet", "Automatic error and typo detection"],
-					["Alternative to files in shared network drives", "Up-to-date contact information always and everywhere", "Instant comprehensive search with options and filtering", "Clear and customizable multilingual interface", "Unlimited number of devices used"]
-				],
-				title: "MODERN EMPLOYEE DIRECTORY"
-			},
-			kk: {
-				headings: ["ҰЙЫМ ҮШІН", "ӘКІМШІ ҮШІН", "ОПЕРАТОР ҮШІН", "ПАЙДАЛАНУШЫ ҮШІН"],
-				paragraphs: [
-					["Барлық ақпараттың құпиялығы мен қауіпсіздігі", "Талап етілетін минимум — тек сайт пен желі", "Бір жауапты тұлғасы бар бірыңғай жүйе", "Рұқсатсыз қосылулардың болмауы", "Толық тәуелсіздік пен еркін шығу"],
-					[`Қауіпсіз орнату ${urls.ms} және ${urls.wg} арқылы`, `${urls.ar} + ${urls.sp} + ${urls.vt} бойынша таза бедел`, "<a href=\"https://google.com/search?q=TLS+протоколы+дегеніміз+не\" target=\"_blank\" title=\"Google\" aria-label=\"Google\">TLS</a> және <a href=\"https://github.com/teamatica/backend/blob/main/kk/%E2%9C%85%20PHP/index.php\" title=\"GitHub\" aria-label=\"GitHub\" target=\"_blank\">PHP</a> қолдаумен кез келген сайтта <a href=\"https://google.com/search?q=on-premises+дегеніміз+не\" target=\"_blank\" title=\"Google\" aria-label=\"Google\">on-premises</a>", "<a href=\"https://youtu.be/jWLrcu5TxJA\" title=\"YouTube\" aria-label=\"YouTube\" target=\"_blank\">Бірнеше минут пен кликте</a> нөлден орналастыру", "Толық автоматтандырылған қызмет көрсету мүмкіндігі"],
-					["Артық және қате қоңыраулар санын азайту", "Орталықтандырылған басқару және қорғалған жеткізу", "Жеке деректерге бақыланатын қол жеткізу", "Қарапайым <a href=\"https://docs.google.com/spreadsheets/d/1y-i8sAEFsT0NVi8tqAQbMXdXAeK1_vFPhm1NxreuDYc\" title=\"Google Sheets\" aria-label=\"Google Sheets\" target=\"_blank\">XLSX</a> кестесімен толтыру", "Қателер мен опечаткаларды автоматты анықтау"],
-					["Ортақ желілік файлообменниктердегі файлдарға балама", "Жаңартылған байланыс мәліметтері әрқашан және барлық жерде", "Опциялары мен сүзгісі бар лездік кешенді іздеу", "Түсінікті және баптауға болатын көптілді интерфейс", "Пайдаланылатын құрылғылардың шексіз саны"]
-				],
-				title: "ЗАМАНАУИ ҚЫЗМЕТКЕРЛЕР АНЫҚТАМАЛЫҒЫ"
-			},
-			ru: {
-				headings: ["ДЛЯ ОРГАНИЗАЦИИ", "ДЛЯ АДМИНИСТРАТОРА", "ДЛЯ ОПЕРАТОРА", "ДЛЯ ПОЛЬЗОВАТЕЛЯ"],
-				paragraphs: [
-					["Приватность и конфиденциальность всей информации", "Минимум необходимых ресурсов — только сайт и сеть", "Единая общая система с одним ответственным лицом", "Отсутствие несанкционированных подключений", "Абсолютная независимость и свободный выход"],
-					[`Безопасная установка из ${urls.ms} и ${urls.wg}`, `Чистая репутация в ${urls.ar} + ${urls.sp} + ${urls.vt}`, "<a href=\"https://google.com/search?q=что+такое+on-premises\" target=\"_blank\" title=\"Google\" aria-label=\"Google\">On-premises</a> на любом сайте с поддержкой <a href=\"https://google.com/search?q=что+такое+протокол+TLS\" target=\"_blank\" title=\"Google\" aria-label=\"Google\">TLS</a> и <a href=\"https://github.com/teamatica/backend/blob/main/ru/%E2%9C%85%20PHP/index.php\" title=\"GitHub\" aria-label=\"GitHub\" target=\"_blank\">PHP</a>", "Развёртывание с нуля за <a href=\"https://youtu.be/jWLrcu5TxJA\" title=\"YouTube\" aria-label=\"YouTube\" target=\"_blank\">несколько минут и кликов</a>", "Возможность полной автоматизации обслуживания"],
-					["Уменьшение объёма лишних и ошибочных звонков", "Централизованное управление и защищённая доставка", "Контролируемый доступ к персональным данным", "Заполнение с помощью самой обычной <a href=\"https://docs.google.com/spreadsheets/d/1vwpwlGWMeXw9istE-t38QPcX3pXIOZ6eXN0GfNym7cc\" title=\"Google Sheets\" aria-label=\"Google Sheets\" target=\"_blank\">XLSX</a>-таблицы", "Автоматическое обнаружение ошибок и опечаток"],
-					["Альтернатива файлам в общих сетевых обменниках", "Актуальные контактные сведения всегда и везде", "Мгновенный сквозной поиск с опциями и фильтрацией", "Понятный и настраиваемый мультиязычный интерфейс", "Неограниченное количество используемых устройств"]
-				],
-				title: "СОВРЕМЕННЫЙ СПРАВОЧНИК СОТРУДНИКОВ"
-			},
-			uk: {
-				headings: ["ДЛЯ ОРГАНІЗАЦІЇ", "ДЛЯ АДМІНІСТРАТОРА", "ДЛЯ ОПЕРАТОРА", "ДЛЯ КОРИСТУВАЧА"],
-				paragraphs: [
-					["Приватність і конфіденційність всієї інформації", "Мінімум необхідного — лише сайт і мережа", "Єдина спільна система з однією відповідальною особою", "Відсутність несанкціонованих підключень", "Абсолютна незалежність і вільний вихід"],
-					[`Безпечне встановлення з ${urls.ms} та ${urls.wg}`, `Чиста репутація в ${urls.ar} + ${urls.sp} + ${urls.vt}`, "<a href=\"https://google.com/search?q=що+таке+on-premises\" target=\"_blank\" title=\"Google\" aria-label=\"Google\">On-premises</a> на будь-якому сайті з підтримкою <a href=\"https://google.com/search?q=що+таке+протокол+TLS\" target=\"_blank\" title=\"Google\" aria-label=\"Google\">TLS</a> та <a href=\"https://github.com/teamatica/backend/blob/main/uk/%E2%9C%85%20PHP/index.php\" title=\"GitHub\" aria-label=\"GitHub\" target=\"_blank\">PHP</a>", "Розгортання з нуля за <a href=\"https://youtu.be/jWLrcu5TxJA\" title=\"YouTube\" aria-label=\"YouTube\" target=\"_blank\">декілька хвилин і кліків</a>", "Можливість повної автоматизації обслуговування"],
-					["Зменшення обсягу зайвих і помилкових дзвінків", "Централізоване управління і захищена доставка", "Контрольований доступ до персональних даних", "Заповнення за допомогою звичайної <a href=\"https://docs.google.com/spreadsheets/d/1cGrhJRyjJUpq8SFu1KIIC2ojSPdhUIRapINo9j7SfvY\" title=\"Google Sheets\" aria-label=\"Google Sheets\" target=\"_blank\">XLSX</a> таблиці", "Автоматичне виявлення помилок і друкарських помилок"],
-					["Альтернатива файлам у спільних мережевих обмінниках", "Актуальні контактні відомості завжди і всюди", "Миттєвий наскрізний пошук з опціями та фільтрацією", "Зрозумілий і налаштовуваний багатомовний інтерфейс", "Необмежена кількість використовуваних пристроїв"]
-				],
-				title: "СУЧАСНИЙ ДОВІДНИК СПІВРОБІТНИКІВ"
+	const canHover = window.matchMedia("(hover: hover)").matches;
+	const universalOffset = parseInt(window.getComputedStyle(document.getElementById("finalLink")).fontWeight);
+	let mouse = {
+		x: canHover ? window.innerWidth / 2 : (window.innerWidth / 2) + universalOffset,
+		y: canHover ? window.innerHeight / 2 : (window.innerHeight / 2) - universalOffset
+	};
+	window.addEventListener("mousemove", (e) => {
+		mouse.x = e.clientX;
+		mouse.y = e.clientY;
+		if (!ticking && isInitialized) {
+			requestAnimationFrame(onScroll);
+			ticking = true;
+		}
+	});
+	let isHoveringGears = false;
+	const clamp = v => v < 0 ? 0 : v > 1 ? 1 : v;
+	const idWrap = document.getElementById("idWrap");
+	const defaults = {
+		hintOffset: 10,
+		smallGap: 5,
+		edgeGap: 20,
+		lineLen: 60,
+		logoMove: 8,
+		logoRange: 20,
+		hintMinW: 100,
+		winPadding: 20,
+		introLineExit: 60,
+		introOffset: 13,
+		introTextWidth: 240,
+		strokeWidth: 1,
+		progressChunk: 50
+	};
+	let ui = {
+		...defaults
+	};
+	let uiScale = 1;
+	const icons = {
+		xlsx: "M544 0v256h96v256h-96v128H96V512H0V256h96V0zM128 512v96h384v-96zm257-210q-19 0-34 6-15 7-23 19-9 10-9 27 0 19 13 30 12 10 34 16l16 3 14 4 8 5q3 3 3 7t-3 7l-7 5-12 2q-9 0-15-3-6-2-9-8l-4-12h-42q0 20 9 33t25 20 37 6q20 0 35-6t23-17 8-27q0-9-3-17t-9-14q-6-7-16-11-9-5-23-8l-14-3-10-3-6-3-4-4q-2-2-1-5 0-4 2-7 1-3 6-4l11-2q11 0 16 5 6 5 6 12h43a50 50 0 0 0-31-47q-14-6-34-6m-367 2 49 82-50 81h50l28-48h1l28 48h50l-50-81 48-82h-49l-27 48h-1l-27-48zm173 0v163h111v-36h-66V304zm275 0 49 82-50 81h50l28-48h1l28 48h50l-50-81 48-82h-49l-27 48h-1l-27-48zM128 32v224h384V32z",
+		sql: "m384 0 160 160v96h96v256h-96v128H96V512H0V256h96V0zM128 512v96h384v-96zm201-210q-22 0-40 9-18 10-28 29-11 18-11 46 0 27 11 45 10 19 28 29 18 9 40 9 15 0 29-4l12 14h39l-25-30q9-8 14-18 11-18 11-45c0-27-4-34-11-46q-10-19-28-29-18-9-41-9m-161 0q-20 0-35 6-14 7-23 19-9 10-8 27 0 19 12 30 13 10 34 16l16 3 15 4 7 5q3 3 3 7t-3 7-7 5l-12 2q-8 0-14-3-6-2-10-8-3-5-3-12H98q0 20 8 33 9 13 25 20 16 6 37 6t35-6 23-17 8-27q0-9-3-17t-9-14q-6-7-16-11-9-5-23-8l-13-3-10-3-7-3-4-4-1-5 2-7q2-3 6-4l12-2q10 0 16 5 5 5 5 12h43a50 50 0 0 0-30-47q-15-6-34-6m261 2v163h110v-36h-65V304zm-100 36q12 0 19 6 8 4 11 15 4 10 4 25c0 15-1 18-4 24l-3 7-8-10h-34l18 24h-3q-10 0-18-5-8-6-11-16-4-10-4-24c0-14 1-18 4-25q3-10 11-15 8-6 18-6M128 32v224h384v-96H384V32z",
+		zip: "m384 0 160 160v96h96v256h-96v128H96V512H0V256h96V0zM128 512v96h384v-96zm19-208v36h76l-77 103v24h133v-36h-76l77-102v-25zm154 0v163h44V304zm65 0v163h45v-48h24q18 0 33-7 13-7 21-20 9-14 8-30 0-18-7-31-8-12-22-20c-14-8-19-7-31-7zm60 35q8 0 13 3 6 2 9 8 3 5 3 12l-3 12q-3 5-9 8l-13 2h-15v-45zM128 32v224h384v-96H384V32z",
+		gears: "m381 488-35-21-3-6v-34a7 7 0 0 1 4-6l35-21q8-6 5-14l-10-25q-4-10-14-7l-39 10a7 7 0 0 1-7-2l-24-25-2-6 11-40q3-9-7-14l-24-10a11 11 0 0 0-15 5l-21 35-6 3h-34a7 7 0 0 1-6-4l-21-35q-5-8-14-5l-25 10q-9 4-7 14l10 39a7 7 0 0 1-2 7l-25 24q-2 2-6 2l-40-11a11 11 0 0 0-14 7l-10 24q-4 10 5 15l35 21q3 2 3 6v34a7 7 0 0 1-4 6l-35 21q-8 6-5 14l10 25q4 9 14 7l39-10q4 0 7 2l24 25 2 6-11 40q-2 9 7 14l24 10q10 4 15-5l21-35 6-3h34a7 7 0 0 1 6 4l21 35q5 8 14 5l25-10a11 11 0 0 0 7-14l-10-39a7 7 0 0 1 2-7l25-24 6-2 40 11q9 3 14-7l10-24a11 11 0 0 0-5-15m-147 13a63 63 0 0 1-82-35 63 63 0 0 1 35-82 62 62 0 0 1 82 35 62 62 0 0 1-35 82 M213 287a9 9 0 0 0 6-11l-8-33 2-6 20-19 6-1 32 9q8 2 12-5l9-20a9 9 0 0 0-4-13l-28-18q-3-2-3-5l1-28q0-3 3-5l30-16q7-4 4-12l-8-21a9 9 0 0 0-11-6l-33 8q-3 1-6-2l-19-20q-2-3-1-6l9-32q2-8-5-12l-20-9q-8-2-13 4l-18 28-5 3-28-1-5-3-16-30a9 9 0 0 0-12-4L83 9a9 9 0 0 0-6 11l8 33-2 6-20 19-6 1-32-9q-8-2-12 5L4 95q-2 8 4 13l28 18 3 5-1 28-3 5-30 16q-6 4-4 12l8 21a9 9 0 0 0 11 6l33-8 6 2 19 20 1 6-9 32q-2 8 5 12l20 9a9 9 0 0 0 13-4l18-28q1-3 5-3l28 1 5 3 16 30q4 7 12 4zm-47-90a52 52 0 0 1-67-31 52 52 0 0 1 31-67q20-7 39 2a52 52 0 0 1 26 68q-8 20-29 28"
+	};
+	idWrap.insertAdjacentHTML("afterbegin", `<svg viewBox="0 0 640 640"><defs><filter id="shadowBlur" x="-200%" y="-200%" width="400%" height="400%"><feGaussianBlur in="SourceGraphic" stdDeviation="0" result="blur" /></filter></defs><g><path id="shadowPath" d="${icons.xlsx}" fill="#000000" style="opacity: 0; filter: url(#shadowBlur); transform-origin: center center; will-change: transform, opacity;"></path><path id="iconPath" d="${icons.xlsx}" fill="var(--icon)" style="transform-origin: center center;"></path></g></svg>`);
+	const hintColors = {
+		0: "var(--fg)",
+		1: "var(--icon)",
+		2: "var(--icon)",
+		3: "var(--hint)",
+		4: "var(--window)",
+		5: "var(--window)",
+		6: "var(--window)",
+		7: "var(--server)",
+		8: "var(--window)",
+		9: "var(--window)",
+		10: "var(--window)",
+	};
+	const hintLines = Array.from({
+		length: 11
+	}, (_, i) => {
+		const isLeft = [1, 2, 3, 4, 9].includes(i);
+		return `<div class="hint-line" id="hintLine${i}"><svg><defs><linearGradient id="grad${i}" x1="${isLeft ? "100%" : "0%"}" y1="0%" x2="${isLeft ? "0%" : "100%"}" y2="0%"><stop offset="0%" stop-color="${hintColors[i] || "var(--hint)"}" /><stop offset="100%" stop-color="var(--hint)" /></linearGradient></defs><path id="hintPath${i}" fill="none" stroke-width="1" stroke="url(#grad${i})"></path></svg></div><div class="hint-text" id="hintText${i}"></div>`;
+	}).join("");
+	idWrap.insertAdjacentHTML("beforeend", hintLines);
+	let isInitialized = false,
+		morphTween;
+	const colorWin = getComputedStyle(document.documentElement).getPropertyValue("--window").trim();
+	gsap.registerPlugin(MorphSVGPlugin);
+	morphTween = gsap.timeline({
+		paused: true
+	});
+	morphTween.to("#iconPath", {
+		morphSVG: icons.sql,
+		fill: "#ffffff",
+		duration: 1,
+		ease: "none"
+	}).to("#shadowPath", {
+		morphSVG: icons.sql,
+		duration: 1,
+		ease: "none"
+	}, "<");
+	morphTween.to("#iconPath", {
+		morphSVG: icons.zip,
+		fill: colorWin,
+		duration: 1,
+		ease: "none"
+	}).to("#shadowPath", {
+		morphSVG: icons.zip,
+		duration: 1,
+		ease: "none"
+	}, "<");
+	const loader = document.getElementById("loader");
+	let isLogoVisible = false;
+	document.querySelector(".logo-container").innerHTML = Array.from({
+		length: 9
+	}, (_, i) => `<div class="logo-item"><svg class="logo-svg" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="8" fill="var(--window)" opacity="${[3, 5, 6, 8].includes(i) ? "0.5" : "1"}"></circle></svg></div>`).join("");
+	const logoItems = document.querySelectorAll(".logo-container .logo-item");
+	const introHints = {
+		active: false,
+		mode: "intro",
+		queue: [],
+		originalTexts: [],
+		history: [],
+		historyLimit: 0,
+		activeCount: 0,
+		maxActive: 2,
+		layer: document.getElementById("intro-hint"),
+		config: {
+			charSpeed: 0.05,
+			lineFactor: 5
+		},
+		anchors: [{
+			idx: 0,
+			side: "top"
+		}, {
+			idx: 0,
+			side: "left"
+		}, {
+			idx: 1,
+			side: "top"
+		}, {
+			idx: 2,
+			side: "top"
+		}, {
+			idx: 2,
+			side: "right"
+		}, {
+			idx: 3,
+			side: "left"
+		}, {
+			idx: 5,
+			side: "right"
+		}, {
+			idx: 6,
+			side: "bottom"
+		}, {
+			idx: 6,
+			side: "left"
+		}, {
+			idx: 7,
+			side: "bottom"
+		}, {
+			idx: 8,
+			side: "bottom"
+		}, {
+			idx: 8,
+			side: "right"
+		}],
+		outroAnchors: [{
+			id: "out_t1",
+			side: "top",
+			pos: 0.3
+		}, {
+			id: "out_t2",
+			side: "top",
+			pos: 0.7
+		}, {
+			id: "out_b1",
+			side: "bottom",
+			pos: 0.3
+		}, {
+			id: "out_b2",
+			side: "bottom",
+			pos: 0.7
+		}, {
+			id: "out_l1",
+			side: "left",
+			pos: 0.5
+		}, {
+			id: "out_r1",
+			side: "right",
+			pos: 0.5
+		}],
+		busyAnchors: new Set(),
+		busySides: new Set(),
+		activeHints: new Set(),
+		activeTexts: new Set(),
+		transparentIndices: [3, 5, 6, 8],
+		init(texts) {
+			this.originalTexts = texts;
+			this.historyLimit = Math.floor(texts.length * 0.66);
+			this.refillQueue();
+		},
+		refillQueue() {
+			this.queue = [...this.originalTexts].sort(() => Math.random() - 0.5);
+		},
+		setMode(newMode) {
+			if (this.mode === newMode) return;
+			this.stop();
+			this.mode = newMode;
+		},
+		start() {
+			if (this.active) return;
+			this.active = true;
+			while (this.activeCount < this.maxActive) this.spawn();
+		},
+		stop() {
+			this.active = false;
+			this.activeHints.forEach(hintObj => this.forceExit(hintObj));
+		},
+		handleResize() {
+			if (!this.active) return;
+			this.activeHints.forEach(hintObj => this.updateHintGeometry(hintObj));
+		},
+		spawn(excludeId = -1) {
+			if (!this.active) return;
+			if (this.queue.length === 0) this.refillQueue();
+			if (this.queue.length === 0) return;
+			let textIndex = this.queue.findIndex(t => !this.activeTexts.has(t) && !this.history.includes(t));
+			if (textIndex === -1) textIndex = this.queue.findIndex(t => !this.activeTexts.has(t));
+			if (textIndex === -1) {
+				this.refillQueue();
+				textIndex = this.queue.findIndex(t => !this.activeTexts.has(t));
 			}
-		};
-
-		function getUserLanguage() {
-			const userLang = navigator.languages?.[0] || navigator.language || 'en';
-			const langCode = userLang.substr(0, 2).toLowerCase();
-			const supportedLocales = {
-				kk: 'kk',
-				ru: 'ru',
-				uk: 'uk'
+			if (textIndex === -1) return;
+			const text = this.queue[textIndex];
+			const isLandscape = window.innerWidth > window.innerHeight;
+			const sourceAnchors = this.mode === "intro" ? this.anchors : this.outroAnchors;
+			const availableAnchors = sourceAnchors.filter(a => {
+				const anchorKey = this.mode === "intro" ? a.idx : a.id;
+				if (this.busyAnchors.has(anchorKey)) return false;
+				if (this.busySides.has(a.side)) return false;
+				if (anchorKey === excludeId) return false;
+				if (isLandscape ? (a.side === "top" || a.side === "bottom") : (a.side === "left" || a.side === "right")) return false;
+				return true;
+			});
+			if (availableAnchors.length === 0) {
+				setTimeout(() => this.spawn(), 100);
+				return;
+			}
+			this.queue.splice(textIndex, 1);
+			this.addToHistory(text);
+			this.createHint(availableAnchors[Math.floor(Math.random() * availableAnchors.length)], text);
+		},
+		addToHistory(text) {
+			this.history.push(text);
+			if (this.history.length > this.historyLimit) this.history.shift();
+		},
+		parseColor(str) {
+			if (!str) return [0, 0, 0];
+			str = str.trim();
+			if (str.startsWith("var(--")) str = getComputedStyle(document.documentElement).getPropertyValue(str.slice(4, -1)).trim();
+			if (str.startsWith("#")) {
+				let hex = str.substring(1);
+				if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
+				const bigint = parseInt(hex, 16);
+				return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
+			}
+			if (str.startsWith("rgb")) return str.match(/\d+/g).map(Number);
+			return [255, 255, 255];
+		},
+		mixColors(c1, c2, ratio) {
+			ratio = clamp(ratio);
+			const r = Math.round(c1[0] * (1 - ratio) + c2[0] * ratio);
+			const g = Math.round(c1[1] * (1 - ratio) + c2[1] * ratio);
+			const b = Math.round(c1[2] * (1 - ratio) + c2[2] * ratio);
+			return [r, g, b];
+		},
+		sampleGradientColor(el, relX, relY) {
+			const cBase = this.parseColor("var(--server)");
+			const cBlob1 = this.parseColor("var(--fg)");
+			const cBlob2 = this.parseColor("var(--window)");
+			const getVal = (prop) => parseFloat(el.style.getPropertyValue(prop)) || 50;
+			const x1 = getVal("--x1");
+			const y1 = getVal("--y1");
+			const x2 = getVal("--x2");
+			const y2 = getVal("--y2");
+			const dist1 = Math.sqrt(Math.pow(relX - x1, 2) + Math.pow(relY - y1, 2));
+			const dist2 = Math.sqrt(Math.pow(relX - x2, 2) + Math.pow(relY - y2, 2));
+			const radius = 45;
+			const strength1 = 1 - Math.min(1, dist1 / radius);
+			const strength2 = 1 - Math.min(1, dist2 / radius);
+			let finalColor = cBase;
+			if (strength2 > 0) finalColor = this.mixColors(finalColor, cBlob2, strength2);
+			if (strength1 > 0) finalColor = this.mixColors(finalColor, cBlob1, strength1);
+			return `rgb(${finalColor[0]}, ${finalColor[1]}, ${finalColor[2]})`;
+		},
+		getStartColor(anchor, rect) {
+			if (this.mode === "outro") {
+				const el = document.getElementById("finalLink");
+				let pctX = 50,
+					pctY = 50;
+				if (anchor.side === "top") pctY = 0;
+				if (anchor.side === "bottom") pctY = 100;
+				if (anchor.side === "left") pctX = 0;
+				if (anchor.side === "right") pctX = 100;
+				if (anchor.pos !== undefined) {
+					if (anchor.side === "top" || anchor.side === "bottom") pctX = anchor.pos * 100;
+					else pctY = anchor.pos * 100;
+				}
+				return this.sampleGradientColor(el, pctX, pctY);
+			}
+			if (!this.transparentIndices.includes(anchor.idx)) return "var(--window)";
+			const blended = this.mixColors(this.parseColor("var(--bg)"), this.parseColor("var(--window)"), 0.5);
+			return `rgb(${blended[0]}, ${blended[1]}, ${blended[2]})`;
+		},
+		calculateGeometry(anchor) {
+			let rect;
+			if (this.mode === "outro") {
+				const el = document.getElementById("finalLink");
+				if (!el || el.offsetWidth === 0) return null;
+				rect = el.getBoundingClientRect();
+			}
+			else {
+				const targetDot = logoItems[anchor.idx];
+				if (!targetDot) return null;
+				rect = targetDot.getBoundingClientRect();
+			}
+			const winW = document.documentElement.clientWidth;
+			const startOffset = ui.introOffset;
+			const lineLen = ui.lineLen;
+			const offset = ui.hintOffset;
+			let originX, originY;
+			const posFactor = anchor.pos !== undefined ? anchor.pos : 0.5;
+			if (anchor.side === "top") {
+				originX = rect.left + (rect.width * posFactor);
+				originY = rect.top;
+			}
+			else if (anchor.side === "bottom") {
+				originX = rect.left + (rect.width * posFactor);
+				originY = rect.bottom;
+			}
+			else if (anchor.side === "left") {
+				originX = rect.left;
+				originY = rect.top + (rect.height * posFactor);
+			}
+			else if (anchor.side === "right") {
+				originX = rect.right;
+				originY = rect.top + (rect.height * posFactor);
+			}
+			let startX = originX,
+				startY = originY,
+				endX = originX,
+				endY = originY;
+			let anchorX = 0,
+				anchorY = 0;
+			let textAlign = "left",
+				styleLeft = "auto",
+				styleRight = "auto",
+				transformAlign = "translate(0, 0)";
+			if (anchor.side === "top") {
+				startY -= startOffset;
+				endY = startY - lineLen;
+				anchorX = endX;
+				anchorY = endY - offset;
+				styleLeft = anchorX + "px";
+				transformAlign = "translate(-50%, -100%)";
+				textAlign = "center";
+			}
+			else if (anchor.side === "bottom") {
+				startY += startOffset;
+				endY = startY + lineLen;
+				anchorX = endX;
+				anchorY = endY + offset;
+				styleLeft = anchorX + "px";
+				transformAlign = "translate(-50%, 0%)";
+				textAlign = "center";
+			}
+			else if (anchor.side === "left") {
+				startX -= startOffset;
+				endX = startX - lineLen;
+				anchorX = endX - offset;
+				anchorY = endY;
+				styleRight = (winW - anchorX) + "px";
+				transformAlign = "translate(0%, -50%)";
+				textAlign = "right";
+			}
+			else if (anchor.side === "right") {
+				startX += startOffset;
+				endX = startX + lineLen;
+				anchorX = endX + offset;
+				anchorY = endY;
+				styleLeft = anchorX + "px";
+				transformAlign = "translate(0%, -50%)";
+				textAlign = "left";
+			}
+			return {
+				startX,
+				startY,
+				endX,
+				endY,
+				styleLeft,
+				styleRight,
+				finalTransform: `translate3d(0, ${anchorY}px, 0) ${transformAlign}`,
+				textAlign,
+				lineLen
 			};
-			return supportedLocales[langCode] || 'en';
+		},
+		updateHintGeometry(hintObj) {
+			const geo = this.calculateGeometry(hintObj.anchor);
+			if (!geo) return;
+			hintObj.line.setAttribute("x1", geo.startX);
+			hintObj.line.setAttribute("y1", geo.startY);
+			hintObj.line.setAttribute("x2", geo.endX);
+			hintObj.line.setAttribute("y2", geo.endY);
+			const strokeUrl = hintObj.line.getAttribute("stroke");
+			const gradId = strokeUrl.replace("url(#", "").replace(")", "");
+			const gradient = document.getElementById(gradId);
+			if (gradient) {
+				gradient.setAttribute("x1", geo.startX);
+				gradient.setAttribute("y1", geo.startY);
+				gradient.setAttribute("x2", geo.endX);
+				gradient.setAttribute("y2", geo.endY);
+			}
+			hintObj.textEl.style.left = geo.styleLeft;
+			hintObj.textEl.style.right = geo.styleRight;
+			hintObj.textEl.style.transform = geo.finalTransform;
+		},
+		createHint(anchor, text) {
+			this.activeCount++;
+			const anchorKey = this.mode === "intro" ? anchor.idx : anchor.id;
+			this.busyAnchors.add(anchorKey);
+			this.busySides.add(anchor.side);
+			this.activeTexts.add(text);
+			const geo = this.calculateGeometry(anchor);
+			if (!geo) return;
+			const startColor = this.getStartColor(anchor);
+			const uniqueId = `intro_grad_${Math.random().toString(36).substring(2, 9)}`;
+			const wrapper = document.createElement("div");
+			wrapper.className = "intro-hint-wrapper";
+			const svgHtml = `<svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"><defs><linearGradient id="${uniqueId}" gradientUnits="userSpaceOnUse" x1="${geo.startX}" y1="${geo.startY}" x2="${geo.endX}" y2="${geo.endY}"><stop offset="0%" stop-color="${startColor}" /><stop offset="100%" stop-color="var(--hint)" /></linearGradient></defs><line x1="${geo.startX}" y1="${geo.startY}" x2="${geo.endX}" y2="${geo.endY}" stroke="url(#${uniqueId})" stroke-width="${ui.strokeWidth}" stroke-dasharray="${geo.lineLen}" stroke-dashoffset="${geo.lineLen}" class="intro-line-path"></line></svg>`;
+			const textEl = document.createElement("div");
+			textEl.className = "intro-hint-text hint-text";
+			textEl.style.top = "0px";
+			textEl.style.bottom = "auto";
+			textEl.style.left = geo.styleLeft;
+			textEl.style.right = geo.styleRight;
+			textEl.style.transform = geo.finalTransform;
+			textEl.style.textAlign = geo.textAlign;
+			textEl.style.maxWidth = `${ui.introTextWidth}px`;
+			wrapper.innerHTML = svgHtml;
+			wrapper.appendChild(textEl);
+			this.layer.appendChild(wrapper);
+			const hintObj = {
+				wrapper,
+				textEl,
+				line: wrapper.querySelector("line"),
+				anchor,
+				text,
+				tl: null,
+				isExiting: false
+			};
+			this.activeHints.add(hintObj);
+			const charS = this.config.charSpeed;
+			const len = text.length;
+			const typeDuration = len * charS;
+			const tl = gsap.timeline({
+				onComplete: () => this.removeHint(hintObj)
+			});
+			hintObj.tl = tl;
+			tl.to(hintObj.line, {
+				strokeDashoffset: 0,
+				duration: charS * this.config.lineFactor,
+				ease: "none"
+			});
+			tl.to(textEl, {
+				duration: typeDuration,
+				onUpdate: function() {
+					const chars = Math.floor(this.progress() * len);
+					textEl.textContent = text.substring(0, chars);
+					textEl.classList.toggle("typing", chars < len);
+				},
+				ease: "none"
+			});
+			tl.to({}, {
+				duration: len * charS
+			});
+			tl.to(textEl, {
+				duration: typeDuration / 3,
+				onStart: function() {
+					textEl.classList.remove("typing");
+				},
+				onUpdate: function() {
+					textEl.textContent = text.substring(0, Math.floor((1 - this.progress()) * len));
+				},
+				ease: "none"
+			});
+			tl.to(hintObj.line, {
+				strokeDashoffset: geo.lineLen,
+				duration: 0.2,
+				ease: "none"
+			});
+		},
+		forceExit(hintObj) {
+			if (hintObj.isExiting) return;
+			hintObj.isExiting = true;
+			if (hintObj.tl) hintObj.tl.kill();
+			const textContent = hintObj.textEl.textContent;
+			const geo = this.calculateGeometry(hintObj.anchor);
+			const exitDuration = textContent.length * this.config.charSpeed;
+			const exitTl = gsap.timeline({
+				onComplete: () => this.removeHint(hintObj)
+			});
+			hintObj.textEl.classList.remove("typing");
+			if (textContent.length > 0) {
+				exitTl.to(hintObj.textEl, {
+					duration: exitDuration / 3,
+					onUpdate: function() {
+						hintObj.textEl.textContent = textContent.substring(0, Math.floor((1 - this.progress()) * textContent.length));
+					},
+					ease: "none"
+				});
+			}
+			exitTl.to(hintObj.line, {
+				strokeDashoffset: geo ? geo.lineLen : ui.introLineExit,
+				duration: 0.1,
+				ease: "none"
+			});
+		},
+		removeHint(hintObj) {
+			if (!this.activeHints.has(hintObj)) return;
+			const lastKey = this.mode === "intro" ? hintObj.anchor.idx : hintObj.anchor.id;
+			hintObj.wrapper.remove();
+			this.activeCount--;
+			this.busyAnchors.delete(lastKey);
+			this.busySides.delete(hintObj.anchor.side);
+			this.activeTexts.delete(hintObj.text);
+			this.activeHints.delete(hintObj);
+			if (this.active) this.spawn(lastKey);
 		}
+	};
 
-		function getImagePath(format = 'png') {
-			const lang = getUserLanguage();
-			const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-			return `Teamatica-${lang}-${isDark ? 'dark' : 'light'}.${format}`;
+	function runIntroAnimation() {
+		loader.style.pointerEvents = "auto";
+		isLogoVisible = true;
+		gsap.set(sideLogo, {
+			left: `-${ui.logoMove}px`
+		});
+		gsap.to(sideLogo, {
+			left: `${ui.logoMove}px`,
+			duration: 1,
+			ease: "power2.out",
+			delay: 1
+		});
+		gsap.fromTo(logoItems, {
+			y: window.innerHeight,
+			opacity: 0
+		}, {
+			y: 0,
+			opacity: 1,
+			stagger: {
+				each: 0.1,
+				from: "random"
+			},
+			ease: "power2.out",
+			duration: 2,
+			onComplete: () => {
+				setTimeout(() => {
+					if (window.scrollY === 0) introHints.start();
+				}, 5000);
+			}
+		});
+	}
+
+	function skipIntroAnimation() {
+		gsap.set(logoItems, {
+			y: -window.innerHeight,
+			opacity: 0
+		});
+		gsap.set(".side-logo", {
+			left: `${ui.logoMove}px`
+		});
+		loader.style.pointerEvents = "none";
+		isLogoVisible = false;
+		introHints.stop();
+	}
+
+	function animateLogoItems(direction) {
+		gsap.killTweensOf(logoItems);
+		const isLeaving = direction === "up";
+		gsap.to(logoItems, {
+			y: isLeaving ? -window.innerHeight * 1.1 : 0,
+			opacity: isLeaving ? 0 : 1,
+			stagger: {
+				each: isLeaving ? 0.1 : 0.05,
+				from: "random"
+			},
+			ease: isLeaving ? "power2.in" : "power2.out",
+			duration: 1.5,
+			onStart: () => {
+				if (isLeaving) loader.style.pointerEvents = "none";
+			},
+			onComplete: () => {
+				if (!isLeaving) loader.style.pointerEvents = "auto";
+			}
+		});
+	}
+	const sideLogo = document.querySelector(".side-logo");
+	const cursor = document.getElementById("cursor");
+	const operatorWindow = document.getElementById("operatorWindow");
+	let operatorWindowVisible = false;
+	const serverWindow = document.getElementById("serverWindow");
+	let serverWindowVisible = false;
+	const userWindow = document.getElementById("userWindow");
+	let userWindowVisible = false;
+	const finalLink = document.getElementById("finalLink");
+	const namesContainer = document.getElementById("namesContainer");
+	const progressContainer = document.getElementById("progressContainer");
+	const progressFill = document.getElementById("progressFill");
+	let cachedW = 0,
+		cachedH = 0;
+	let nameElements = [],
+		ticking = false;
+	const serverBackup = document.createElement("div");
+	serverBackup.id = "server-backup";
+	serverBackup.style.cssText = `position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); opacity: 0`;
+	serverWindow.appendChild(serverBackup);
+	let stepElements = [];
+	const stepsContainer = document.createElement("div");
+	stepsContainer.className = "steps-container";
+	document.body.appendChild(stepsContainer);
+	const lerp = (start, end, t) => start + (end - start) * t;
+	const activeState = {
+		stageY: 0,
+		operatorY: 10000,
+		serverY: 10000,
+		userY: 10000,
+		firstItemY: 0,
+		firstItemScale: 1,
+		operatorProgress: 0,
+		exitOffset: 0,
+		effectScale: 1,
+		cursorRelX: 0,
+		cursorRelY: 0,
+		cursorDx: 0,
+		cursorDy: 0
+	};
+	const backupState = {
+		initialized: false,
+		count: 0,
+		namesContainer: null
+	};
+	const metrics = {};
+	const scrollMetrics = {};
+	const hintPositions = {
+		hint0: (s, m) => ({
+			x: m.quarterW * 2,
+			y: s.firstItemY + (m.itemBaseHeight * s.firstItemScale)
+		}),
+		hint1: (s, m) => {
+			const sc = s.effectScale || 1;
+			const half = m.iconHeight / 2;
+			const staticY = half - half - ui.smallGap;
+			const dy = half * (1 - sc);
+			return {
+				x: m.quarterW * 3,
+				y: staticY,
+				dy: dy
+			};
+		},
+		hint2: (s, m) => {
+			const sc = s.effectScale || 1;
+			const half = m.iconHeight / 2;
+			const staticY = half + half + ui.smallGap;
+			const dy = half * (sc - 1);
+			return {
+				x: m.quarterW * 3,
+				y: staticY,
+				dy: dy
+			};
+		},
+		hint3: (s, m) => ({
+			x: s.cursorRelX - ui.smallGap,
+			y: s.cursorRelY - ui.smallGap
+		}),
+		hint4: (s, m) => ({
+			x: (m.operatorWindowW / 2) + (m.iconHeight / 5),
+			y: (m.iconHeight / 2) - (m.operatorWindowH / 2) + (cachedH * (1 - clamp(s.operatorProgress))) - s.stageY - ui.smallGap
+		}),
+		hint5: (s, m) => ({
+			x: -(m.operatorWindowW / 2) + (m.iconHeight * 0.8),
+			y: (m.iconHeight / 2) + s.operatorY - s.stageY + (m.operatorWindowH / 2) + ui.smallGap
+		}),
+		hint6: (s, m) => ({
+			x: m.quarterW,
+			y: window.scrollY > scrollMetrics.serverExitStart ? s.serverY - ui.smallGap : -ui.smallGap
+		}),
+		hint7: (s, m) => ({
+			x: -(m.operatorWindowW / 2) + (m.iconHeight * 0.8),
+			y: (m.iconHeight / 2) + s.serverY + (m.serverH / 2) - s.stageY + ui.smallGap
+		}),
+		hint8: (s, m) => ({
+			x: m.quarterW,
+			y: m.iconHeight + ui.smallGap
+		}),
+		hint9: (s, m) => ({
+			x: (m.operatorWindowW / 2) + (m.iconHeight / 5),
+			y: (m.iconHeight / 2) + s.userY - s.stageY - (m.operatorWindowH / 2) - ui.smallGap
+		}),
+		hint10: (s, m) => ({
+			x: -(m.operatorWindowW / 2) + (m.iconHeight * 0.8),
+			y: (m.iconHeight / 2) + s.userY - s.stageY + (m.operatorWindowH / 2) + ui.smallGap
+		})
+	};
+	const hintsConfig = Array.from(document.querySelectorAll(".hint-line")).map((elemLine, i) => {
+		const id = i;
+		return {
+			id: `hint${id}`,
+			elemLine: elemLine,
+			elemPath: document.getElementById(`hintPath${id}`),
+			elemText: document.getElementById(`hintText${id}`),
+			side: [1, 2, 3, 4, 9].includes(id) ? "left" : "right",
+			prevD: null,
+			prevLen: -1,
+			startScroll: 0,
+			eraseScroll: 0,
+			text: "",
+			textLen: 0,
+			curveDir: [1, 3, 4, 6, 9].includes(id) ? -1 : 1
+		};
+	});
+
+	function loadLocaleData() {
+		const code = navigator.language.slice(0, 2).toLowerCase();
+		const currentLang = "en ru".split(" ").includes(code) ? code : "en";
+		document.documentElement.lang = currentLang;
+		fetch(`/locales/${currentLang}.json`).then(res => res.ok ? res.json() : Promise.reject(res)).then(data => {
+			initNames(data.names, currentLang);
+			initSteps(data.steps);
+			introHints.init(data.texts);
+			const rawHints = data.hints;
+			hintsConfig.forEach((conf, i) => {
+				conf.text = rawHints[i] || "";
+				conf.textLen = conf.text.length;
+				if (conf.elemText) conf.elemText.textContent = "";
+			});
+			onResize(true);
+			if (!isInitialized) {
+				isInitialized = true;
+				if (morphTween) morphTween.progress(0);
+				window.scrollY > 0 ? skipIntroAnimation() : runIntroAnimation();
+				requestAnimationFrame(onScroll);
+			}
+		}).catch(err => console.error(`${currentLang}`, err));
+	}
+	loadLocaleData();
+	window.addEventListener("languagechange", loadLocaleData);
+
+	function initSteps(steps) {
+		stepsContainer.innerHTML = "";
+		stepElements = [];
+		if (!steps || !steps.length) return;
+		steps.forEach(text => {
+			const el = document.createElement("div");
+			el.className = "step-item";
+			el.innerHTML = `<div class="step-text-wrap"><span class="step-base">${text}</span><span class="step-fill">${text}</span></div><svg class="step-check-svg" viewBox="0 0 24 24"><path class="step-check-path" d="M5 13l4 4L19 7"></path></svg>`;
+			stepsContainer.appendChild(el);
+			stepElements.push(el);
+		});
+	}
+
+	function initNames(names, langCode) {
+		nameElements = [];
+		const collator = new Intl.Collator(langCode, {
+			numeric: true,
+			sensitivity: "variant"
+		});
+		const sorted = names.map((name, i) => ({
+			name,
+			i
+		})).sort((a, b) => {
+			const len = Math.min(a.name.length, b.name.length);
+			for (let k = 0; k < len; k++) {
+				const diff = collator.compare(a.name[k], b.name[k]);
+				if (diff !== 0) return diff;
+			}
+			return a.name.length - b.name.length;
+		});
+		const sortMap = new Int32Array(names.length);
+		sorted.forEach((item, sIdx) => sortMap[item.i] = sIdx);
+		namesContainer.innerHTML = names.map(name => `<div class="name-item" style="visibility:hidden">${name}</div>`).join("");
+		const oldOverlay = document.getElementById("namesOverlay");
+		if (oldOverlay) oldOverlay.remove();
+		const overlay = namesContainer.cloneNode(true);
+		overlay.id = "namesOverlay";
+		overlay.classList.add("overlay-white");
+		namesContainer.after(overlay);
+		const children = namesContainer.children;
+		const overlayChildren = overlay.children;
+		for (let i = 0; i < names.length; i++) {
+			nameElements.push({
+				el: children[i],
+				mirrorEl: overlayChildren[i],
+				idx: i,
+				sortIdx: sortMap[i],
+				startX: 0,
+				startY: 0,
+				visible: false,
+				winY: 0,
+				explY: 0,
+				packY: 0,
+				calcExplY: 0,
+				calcPackY: 0
+			});
 		}
+	}
 
-		function applyTranslations() {
-			const lang = getUserLanguage();
-			const data = translations[lang];
+	function calcPositions() {
+		const count = nameElements.length;
+		const firstEl = nameElements[0].el;
+		const startX = -firstEl.offsetWidth,
+			endX = ((count - 0.5) / count) * cachedW,
+			baseH = firstEl.offsetHeight;
+		const totalDist = endX - startX,
+			step = count > 1 ? 1 / (count - 1) : 0;
+		for (let i = 0; i < count; i++) {
+			nameElements[i].startX = startX + (totalDist * (i * step));
+			nameElements[i].startY = -baseH;
+		}
+	}
 
-			for (let i = 0; i < 4; i++) {
-				document.getElementById(`head-${i + 1}`).textContent = data.headings[i];
+	function updateMetrics() {
+		const stage = idWrap.closest(".stage");
+		const prevStagePos = stage.style.position;
+		const prevTransform = idWrap.style.transform;
+		stage.style.position = "relative";
+		idWrap.style.transform = "none";
+		const rect = idWrap.getBoundingClientRect();
+		const appRect = operatorWindow.getBoundingClientRect();
+		idWrap.style.transform = prevTransform;
+		stage.style.position = prevStagePos;
+		const {
+			width: W,
+			height: H,
+			left,
+			top
+		} = rect;
+		const count = nameElements.length;
+		const baseH = nameElements[0].el.offsetHeight;
+		const rowH = H * 0.03;
+		metrics.iconWidth = W;
+		metrics.iconHeight = H;
+		metrics.iconLeft = Math.round(left);
+		metrics.iconTop = Math.round(top + window.scrollY);
+		metrics.itemBaseHeight = baseH;
+		metrics.scaleBase = (rowH / baseH) - 1;
+		metrics.targetX = Math.round((W / 2) - (W * 0.255));
+		metrics.targetY = H / 2;
+		metrics.colSpacing = count > 1 ? Math.min((H * 0.8) / (count - 1), rowH * 2) : 0;
+		metrics.operatorWindowW = appRect.width;
+		metrics.operatorWindowH = appRect.height;
+		metrics.serverH = metrics.operatorWindowH / 2;
+		metrics.quarterW = W / 4;
+		metrics.fifthW = W / 5;
+		metrics.ninthW = W / 1.9;
+		if (progressContainer) {
+			const barHeight = Math.max(2, Math.round(metrics.iconHeight * 0.05));
+			progressContainer.style.height = `${barHeight}px`;
+			progressContainer.style.top = (metrics.iconHeight + ((metrics.serverH - metrics.iconHeight) / 4) - (barHeight / 2)) + "px";
+		}
+		hintsConfig.forEach(conf => conf.elemLine.style.width = `${W}px`);
+	}
 
-				for (let j = 0; j < 5; j++) {
-					document.getElementById(`h${i + 1}p${j + 1}`).innerHTML = data.paragraphs[i][j];
+	function onResize(force) {
+		const newWidth = window.innerWidth;
+		if (!force && newWidth === cachedW) return;
+		cachedW = newWidth;
+		const stageContent = document.querySelector(".stage-content");
+		cachedH = stageContent ? stageContent.clientHeight : window.innerHeight;
+		const currentRem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		uiScale = currentRem / 16;
+		for (let key in defaults) ui[key] = defaults[key] * uiScale;
+		hintsConfig.forEach(conf => {
+			if (conf.elemPath) conf.elemPath.setAttribute("stroke-width", ui.strokeWidth);
+		});
+		if (nameElements.length === 0) return;
+		calcPositions();
+		updateMetrics();
+		const packDuration = cachedH * 2;
+		const moveDuration = cachedH * 1.9;
+		const charUnit = cachedH * 0.01;
+		const lineDuration = cachedH * 0.1;
+		Object.assign(scrollMetrics, {
+			packDuration: packDuration,
+			moveDuration: moveDuration,
+			namesEndScroll: Math.max(packDuration, moveDuration),
+			stageYMultiplier: cachedH,
+			charUnit,
+			lineDuration
+		});
+		const hints = hintsConfig;
+		hints[0].startScroll = scrollMetrics.namesEndScroll * 0.3;
+		hints[0].eraseScroll = moveDuration;
+		hints[1].startScroll = moveDuration;
+		hints[1].eraseScroll = moveDuration + lineDuration + (hints[0].textLen * charUnit) + lineDuration + (hints[2].textLen * charUnit);
+		hints[2].startScroll = moveDuration + lineDuration + (hints[0].textLen * charUnit);
+		hints[2].eraseScroll = hints[1].eraseScroll + lineDuration + (hints[1].textLen * charUnit);
+		scrollMetrics.operatorWindowStartScroll = hints[2].eraseScroll - lineDuration - (hints[2].textLen * charUnit);
+		scrollMetrics.operatorWindowDuration = packDuration;
+		scrollMetrics.listStartScroll = scrollMetrics.operatorWindowStartScroll + (scrollMetrics.operatorWindowDuration * (clamp(1 - (((metrics.iconHeight / 2) + (metrics.operatorWindowH / 2)) / cachedH))));
+		scrollMetrics.listDuration = cachedH;
+		scrollMetrics.pauseDuration = cachedH * 0.5;
+		scrollMetrics.listEndScroll = scrollMetrics.listStartScroll + scrollMetrics.listDuration + scrollMetrics.pauseDuration;
+		scrollMetrics.packBackStart = scrollMetrics.listEndScroll - scrollMetrics.pauseDuration;
+		hints[3].startScroll = hints[1].eraseScroll;
+		hints[3].eraseScroll = scrollMetrics.listStartScroll;
+		hints[4].startScroll = scrollMetrics.operatorWindowStartScroll + scrollMetrics.operatorWindowDuration - lineDuration - (hints[4].textLen * charUnit);
+		hints[4].eraseScroll = scrollMetrics.packBackStart + (cachedH * (0.4 + (Math.max(0, nameElements.length - 1) * 0.02))) - lineDuration - (hints[4].textLen * charUnit);
+		hints[5].startScroll = hints[4].startScroll + lineDuration + (hints[4].textLen * charUnit);
+		hints[5].eraseScroll = hints[4].eraseScroll + lineDuration + (hints[4].textLen * charUnit);
+		scrollMetrics.packBackDuration = cachedH;
+		scrollMetrics.zipStart = hints[5].eraseScroll;
+		scrollMetrics.zipDuration = scrollMetrics.pauseDuration;
+		Object.assign(scrollMetrics, {
+			operatorExitStart: scrollMetrics.zipStart,
+			operatorExitDuration: moveDuration,
+			serverEnterStart: scrollMetrics.zipStart + (moveDuration * 0.5),
+			serverEnterDuration: moveDuration * 0.5
+		});
+		scrollMetrics.serverWaitStart = scrollMetrics.serverEnterStart + scrollMetrics.serverEnterDuration;
+		scrollMetrics.serverWaitDuration = cachedH;
+		scrollMetrics.serverExitStart = scrollMetrics.serverWaitStart + scrollMetrics.serverWaitDuration;
+		scrollMetrics.serverExitDuration = moveDuration;
+		hints[6].startScroll = scrollMetrics.zipStart + (scrollMetrics.operatorExitDuration * (((metrics.operatorWindowH / 2) + (metrics.iconHeight / 2)) / (cachedH + metrics.operatorWindowH)));
+		hints[6].eraseScroll = scrollMetrics.serverWaitStart;
+		hints[7].startScroll = scrollMetrics.serverWaitStart - lineDuration - (hints[7].textLen * charUnit);
+		hints[7].eraseScroll = scrollMetrics.serverExitStart;
+		hints[8].startScroll = hints[7].eraseScroll;
+		hints[8].eraseScroll = scrollMetrics.serverExitStart + scrollMetrics.serverExitDuration - lineDuration - (hints[9].textLen * charUnit);
+		hints[9].startScroll = hints[8].eraseScroll;
+		hints[9].eraseScroll = hints[9].startScroll + lineDuration + (hints[9].textLen * charUnit) + lineDuration + (hints[10].textLen * charUnit);
+		hints[10].startScroll = scrollMetrics.serverExitStart + scrollMetrics.serverExitDuration;
+		hints[10].eraseScroll = Math.max(hints[9].eraseScroll + lineDuration + (hints[9].textLen * charUnit), hints[10].startScroll + lineDuration + (hints[10].textLen * charUnit) + (cachedH * 0.5));
+		scrollMetrics.morphStart = scrollMetrics.listStartScroll;
+		scrollMetrics.morph1Duration = scrollMetrics.zipStart - scrollMetrics.morphStart;
+		scrollMetrics.listRowH = (metrics.operatorWindowH - ui.winPadding) / nameElements.length;
+		scrollMetrics.targetListScale = (scrollMetrics.listRowH * 1.5) / metrics.itemBaseHeight;
+		scrollMetrics.listStartX = (metrics.operatorWindowW / -2) + ui.hintOffset;
+		scrollMetrics.listStartY = -((nameElements.length - 1) * scrollMetrics.listRowH) / 2;
+		scrollMetrics.itemDuration = Math.max(0.1, 1 - (Math.max(0, nameElements.length - 1) * 0.01));
+		scrollMetrics.userExitStart = hints[10].eraseScroll;
+		scrollMetrics.userExitDuration = moveDuration;
+		scrollMetrics.userContactP = clamp(1 - (((metrics.iconHeight / 2) + (metrics.operatorWindowH / 2)) / ((cachedH / 2) + (metrics.operatorWindowH / 2))));
+		scrollMetrics.userListStartScroll = (scrollMetrics.serverExitStart + (scrollMetrics.serverExitDuration * 0.5)) + ((scrollMetrics.serverExitDuration * 0.5) * scrollMetrics.userContactP);
+		scrollMetrics.unzipDuration = (scrollMetrics.serverExitDuration * 0.5) * (1 - scrollMetrics.userContactP);
+		const mainContainer = document.querySelector(".scrolly");
+		mainContainer.style.height = (scrollMetrics.userExitStart + scrollMetrics.userExitDuration + cachedH + charUnit) + "px";
+		mainContainer.style.minHeight = "0px";
+		mainContainer.style.paddingBottom = "0px";
+		const half = (nameElements.length - 1) / 2;
+		const listBaseY = (metrics.iconHeight / 2) + scrollMetrics.listStartY;
+		metrics.finalWinX = (metrics.iconWidth / 2) + scrollMetrics.listStartX;
+		nameElements.forEach(item => {
+			item.winY = listBaseY + (item.sortIdx * scrollMetrics.listRowH);
+			item.explY = (nameElements.length - 1 - item.idx - half) * metrics.colSpacing;
+			item.packY = (item.sortIdx - half) * metrics.colSpacing;
+			item.calcExplY = metrics.targetY + item.explY;
+			item.calcPackY = metrics.targetY + item.packY;
+		});
+		serverBackup.innerHTML = "";
+		serverBackup.style.opacity = "0";
+		Object.assign(backupState, {
+			initialized: false,
+			count: 0,
+			namesContainer: null
+		});
+		scrollMetrics.stepStagger = scrollMetrics.pauseDuration / 2;
+		scrollMetrics.stepsEntryDuration = lineDuration + (hints[0].textLen * charUnit);
+		scrollMetrics.stepsEntryStart = hints[0].startScroll + lineDuration + (hints[0].textLen * charUnit) - scrollMetrics.stepsEntryDuration;
+		scrollMetrics.step1to2Duration = lineDuration + (hints[1].textLen * charUnit);
+		scrollMetrics.step1to2Start = hints[1].eraseScroll + lineDuration + (hints[1].textLen * charUnit) - scrollMetrics.step1to2Duration;
+		scrollMetrics.step2to3Duration = lineDuration + (hints[5].textLen * charUnit);
+		scrollMetrics.step2to3Start = hints[5].eraseScroll + lineDuration + (hints[5].textLen * charUnit) - scrollMetrics.step2to3Duration;
+		scrollMetrics.stepExitDuration = scrollMetrics.pauseDuration;
+		scrollMetrics.stepExitStart = hints[10].startScroll - scrollMetrics.unzipDuration;
+		scrollMetrics.scaleUpStart = hints[1].eraseScroll;
+		scrollMetrics.scaleUpEnd = scrollMetrics.scaleUpStart + lineDuration + (hints[1].textLen * charUnit);
+		scrollMetrics.scaleDownStart = scrollMetrics.listStartScroll;
+		scrollMetrics.scaleDownEnd = scrollMetrics.listStartScroll + scrollMetrics.listDuration;
+		scrollMetrics.cursorEntryStart = hints[1].startScroll;
+		scrollMetrics.cursorEntryEnd = scrollMetrics.scaleUpStart;
+		scrollMetrics.cursorEntryDuration = scrollMetrics.cursorEntryEnd - scrollMetrics.cursorEntryStart;
+		scrollMetrics.cursorExitStart = scrollMetrics.scaleDownEnd;
+		scrollMetrics.cursorExitDuration = scrollMetrics.operatorExitStart - scrollMetrics.cursorExitStart;
+		if (scrollMetrics.cursorExitDuration < 0) scrollMetrics.cursorExitDuration = 0;
+		introHints.handleResize();
+		requestAnimationFrame(onScroll);
+	}
+
+	function onScroll() {
+		if (!isInitialized) return;
+		ticking = false;
+		const scrollY = window.scrollY;
+		updateStage(scrollY);
+		updateOperatorWindow(scrollY);
+		updateServerWindow(scrollY);
+		updateUserWindow(scrollY);
+		updateNamesList(scrollY);
+		const keepAnimatingCursor = updateCursor(scrollY);
+		updateHints(scrollY);
+		updateMasks(scrollY);
+		updateMorph(scrollY);
+		updateProgressBar(scrollY);
+		updateSteps(scrollY);
+		updateSideLogo(scrollY);
+		updateFinalLink(scrollY);
+		if (keepAnimatingCursor) {
+			requestAnimationFrame(onScroll);
+			ticking = true;
+		}
+	}
+
+	function updateStage(scrollY) {
+		activeState.stageY = scrollMetrics.stageYMultiplier * (1 - clamp(scrollY / scrollMetrics.moveDuration));
+		activeState.exitOffset = (scrollMetrics.userExitStart && scrollY > scrollMetrics.userExitStart) ? (cachedH + metrics.operatorWindowH) * Math.min(1, (scrollY - scrollMetrics.userExitStart) / scrollMetrics.userExitDuration) : 0;
+		idWrap.style.transform = `translate3d(0, ${activeState.stageY - activeState.exitOffset}px, 0)`;
+	}
+
+	function updateOperatorWindow(scrollY) {
+		let progressWindow = 0;
+		if (scrollMetrics.operatorWindowStartScroll) progressWindow = (scrollY - scrollMetrics.operatorWindowStartScroll) / scrollMetrics.operatorWindowDuration;
+		activeState.operatorProgress = progressWindow;
+		let exitProgress = 0;
+		if (scrollY > scrollMetrics.operatorExitStart) exitProgress = Math.min(1, (scrollY - scrollMetrics.operatorExitStart) / scrollMetrics.operatorExitDuration);
+		const currentY = (cachedH * (1 - clamp(progressWindow))) + (-(cachedH + metrics.operatorWindowH) * exitProgress);
+		activeState.operatorY = currentY;
+		if (progressWindow <= 0) {
+			operatorWindow.style.visibility = "hidden";
+			operatorWindow.style.transform = "translate(-50%, -50%) translate3d(0, 50vh, 0)";
+			operatorWindowVisible = false;
+		}
+		else {
+			operatorWindow.style.visibility = "visible";
+			operatorWindow.style.transform = `translate(-50%, -50%) translate3d(0, ${currentY}px, 0)`;
+			operatorWindowVisible = true;
+		}
+	}
+
+	function updateServerWindow(scrollY) {
+		const serverEnterP = scrollY > scrollMetrics.serverEnterStart ? Math.min(1, (scrollY - scrollMetrics.serverEnterStart) / scrollMetrics.serverEnterDuration) : 0;
+		const serverExitP = scrollY > scrollMetrics.serverExitStart ? Math.min(1, (scrollY - scrollMetrics.serverExitStart) / scrollMetrics.serverExitDuration) : 0;
+		const waitP = scrollY > scrollMetrics.serverWaitStart ? Math.min(1, (scrollY - scrollMetrics.serverWaitStart) / scrollMetrics.serverWaitDuration) : 0;
+		if (!backupState.initialized) {
+			const iconClone = idWrap.querySelector("svg").cloneNode(true);
+			iconClone.style.transform = "none";
+			iconClone.style.filter = "none";
+			iconClone.style.willChange = "auto";
+			iconClone.removeAttribute("id");
+			iconClone.querySelectorAll("[id]").forEach(el => el.removeAttribute("id"));
+			const group = iconClone.querySelector("g");
+			if (group) group.innerHTML = `<path d="${icons.zip}" fill="${colorWin}"></path>`;
+			iconClone.style.width = `${metrics.iconWidth}px`;
+			iconClone.style.height = "auto";
+			iconClone.style.position = "relative";
+			const namesClone = namesContainer.cloneNode(false);
+			namesClone.style.transform = "none";
+			namesClone.removeAttribute("id");
+			namesClone.style.position = "absolute";
+			namesClone.style.top = "0";
+			namesClone.style.left = "0";
+			namesClone.style.width = "100%";
+			namesClone.style.height = "100%";
+			namesClone.style.color = "#ffffff";
+			const wrapper = document.createElement("div");
+			wrapper.style.position = "relative";
+			wrapper.style.width = `${metrics.iconWidth}px`;
+			wrapper.style.height = `${metrics.iconHeight}px`;
+			wrapper.append(iconClone, namesClone);
+			serverBackup.appendChild(wrapper);
+			Object.assign(backupState, {
+				initialized: true,
+				namesContainer: namesClone,
+				count: 0
+			});
+		}
+		if (waitP > 0) {
+			const targetCount = Math.floor(waitP * nameElements.length);
+			const diff = targetCount - backupState.count;
+			if (diff > 0) {
+				for (let i = backupState.count; i < targetCount; i++) {
+					const item = nameElements[i];
+					if (item && item.el) {
+						const clone = item.el.cloneNode(true);
+						clone.style.transform = `translate3d(${metrics.targetX}px, ${metrics.targetY + item.packY}px, 0) translate(0, -50%) scale(${1 + metrics.scaleBase})`;
+						clone.style.visibility = "visible";
+						backupState.namesContainer.appendChild(clone);
+					}
+				}
+				backupState.count = targetCount;
+			}
+			else if (diff < 0) {
+				while (backupState.count > targetCount && backupState.namesContainer.lastElementChild) {
+					backupState.namesContainer.removeChild(backupState.namesContainer.lastElementChild);
+					backupState.count--;
 				}
 			}
-
-			document.getElementById('title-text').textContent = data.title;
+			serverBackup.style.opacity = Math.min(1, waitP * 10) * 0.25;
 		}
-
-		function loadImage() {
-			const img = document.getElementById('screenshot-img');
-
-			if (!img) return;
-
-			img.onload = function() {
-				positionElements();
-			};
-
-			img.src = getImagePath('png');
-			const webpImg = new Image();
-			webpImg.onload = function() {
-				img.src = getImagePath('webp');
-			};
-
-			setTimeout(() => {
-				webpImg.src = getImagePath('webp');
-			}, 100);
+		else {
+			serverBackup.style.opacity = "0";
+			while (backupState.namesContainer && backupState.namesContainer.firstChild) backupState.namesContainer.removeChild(backupState.namesContainer.firstChild);
+			backupState.count = 0;
 		}
-
-		function positionElements() {
-			const img = document.getElementById('screenshot-img');
-			const backgroundText = document.getElementById('background-text');
-			const titleText = document.getElementById('title-text');
-			const demoButton = document.getElementById('demo-button');
-			const container = document.querySelector('.container');
-
-			if (!img || !backgroundText || !titleText || !demoButton || !container) return;
-
-			const imgRect = img.getBoundingClientRect();
-			const containerRect = img.parentElement.getBoundingClientRect();
-			const fontSize = window.innerWidth < 1600 ? imgRect.width / 6 : imgRect.width / 3.6;
-			titleText.style.fontSize = `${imgRect.width / 25}px`;
-			titleText.style.top = window.innerWidth < 1600 ? `${imgRect.top - containerRect.top - fontSize * 0.4}px` : `${imgRect.top - containerRect.top - fontSize * 0.25}px`;
-			const titleRect = titleText.getBoundingClientRect();
-			const imgCenterX = imgRect.left + (imgRect.width / 2);
-			titleText.style.left = `${imgCenterX - containerRect.left - (titleRect.width / 2)}px`;
-			const buttonWidth = Math.min(imgRect.width * 0.4, 194);
-			demoButton.style.width = `${buttonWidth}px`;
-			demoButton.style.height = `${Math.min(buttonWidth * 0.2, 48)}px`;
-			demoButton.style.fontSize = `${Math.min(buttonWidth * 0.11, 24)}px`;
-			demoButton.style.top = window.innerWidth < 1600 ? `${imgRect.bottom - containerRect.top + imgRect.top - titleRect.top}px` : `${imgRect.bottom - containerRect.top + imgRect.top - (titleRect.top + (titleRect.height / 1.5))}px`;
-			demoButton.style.left = `${imgCenterX - containerRect.left - (buttonWidth / 2)}px`;
-			backgroundText.style.fontSize = `${fontSize - 10}px`;
-			backgroundText.style.filter = `blur(${fontSize / 20}px)`;
-			backgroundText.style.top = `${imgRect.top - containerRect.top - fontSize * 0.95}px`;
-			backgroundText.style.left = `${imgCenterX - containerRect.left - (backgroundText.width / 2)}px`;
-
-			if (window.innerWidth < 1600) {
-				container.style.paddingTop = `${backgroundText.getBoundingClientRect().height / 2}px`;
-			} else {
-				container.style.paddingTop = '';
+		if (serverEnterP <= 0) {
+			if (serverWindowVisible) {
+				serverWindow.style.visibility = "hidden";
+				serverWindow.style.transform = "translate(-50%, -50%) translate3d(0, 150vh, 0)";
+				serverWindowVisible = false;
 			}
 		}
-
-		function handleThemeOrLanguageChange() {
-			applyTranslations();
-			loadImage();
+		else {
+			if (!serverWindowVisible) {
+				serverWindow.style.visibility = "visible";
+				serverWindowVisible = true;
+			}
+			activeState.serverY = (((cachedH / 2) + (metrics.serverH / 2)) + window.innerHeight - cachedH) * (1 - serverEnterP);
+			if (serverExitP > 0) activeState.serverY -= (cachedH + metrics.serverH) * serverExitP;
+			serverWindow.style.transform = `translate(-50%, -50%) translate3d(0, ${activeState.serverY}px, 0)`;
 		}
+	}
 
-		document.addEventListener('DOMContentLoaded', function() {
-			applyTranslations();
-			loadImage();
+	function updateUserWindow(scrollY) {
+		const enterDuration = scrollMetrics.serverExitDuration * 0.5;
+		const startScroll = scrollMetrics.serverExitStart + enterDuration;
+		let progress = 0;
+		if (scrollY > startScroll) progress = enterDuration > 0 ? Math.min(1, (scrollY - startScroll) / enterDuration) : 1;
+		const staticStartY = (cachedH / 2) + (metrics.operatorWindowH / 2);
+		if (progress <= 0) {
+			if (userWindowVisible) {
+				userWindow.style.visibility = "hidden";
+				userWindow.style.transform = `translate(-50%, -50%) translate3d(0, ${staticStartY + Math.max(0, window.innerHeight - cachedH)}px, 0)`;
+				userWindowVisible = false;
+			}
+		}
+		else {
+			if (!userWindowVisible) {
+				userWindow.style.visibility = "visible";
+				userWindowVisible = true;
+			}
+			let currentY = staticStartY * (1 - progress);
+			if (progress < scrollMetrics.userContactP) currentY += Math.max(0, window.innerHeight - cachedH) * (1 - (progress / scrollMetrics.userContactP));
+			activeState.userY = currentY;
+			userWindow.style.transform = `translate(-50%, -50%) translate3d(0, ${currentY - activeState.exitOffset}px, 0)`;
+		}
+	}
+
+	function updateNamesList(scrollY) {
+		const {
+			listStartScroll,
+			packDuration,
+			listDuration,
+			userListStartScroll,
+			unzipDuration,
+			packBackStart,
+			packBackDuration,
+			itemDuration,
+			listRowH,
+			targetListScale,
+			listStartY,
+			moveDuration
+		} = scrollMetrics;
+		const {
+			iconLeft,
+			iconTop,
+			targetX,
+			targetY,
+			scaleBase,
+			iconHeight,
+			finalWinX
+		} = metrics;
+		const count = nameElements.length;
+		const progressPack = clamp(scrollY / packDuration);
+		const listProgress = scrollY > listStartScroll ? clamp((scrollY - listStartScroll) / listDuration) : 0;
+		if (progressPack === 0 && listProgress === 0) {
+			if (nameElements.length > 0 && nameElements[0].visible) {
+				for (let i = 0; i < count; i++) {
+					nameElements[i].el.style.visibility = nameElements[i].mirrorEl.style.visibility = "hidden";
+					nameElements[i].visible = false;
+				}
+			}
+			return;
+		}
+		const unzipProgress = scrollY > userListStartScroll ? clamp((scrollY - userListStartScroll) / unzipDuration) : 0;
+		const packProgress = scrollY > packBackStart ? clamp((scrollY - packBackStart) / packBackDuration) : 0;
+		const curTop = iconTop + activeState.stageY;
+		const elevator = iconHeight * (1 - clamp(scrollY / moveDuration));
+		const destS = 1 + scaleBase;
+		let iconCenterAbsY = 0;
+		let winTopAbsY = 0;
+		let totalDistanceForLastItem = 1;
+		if (unzipProgress > 0) {
+			const iconRect = idWrap.getBoundingClientRect();
+			iconCenterAbsY = iconRect.top + (iconRect.height / 2);
+			winTopAbsY = userWindow.getBoundingClientRect().top;
+			let minPackY = Infinity;
+			for (let i = 0; i < count; i++)
+				if (nameElements[i].packY < minPackY) minPackY = nameElements[i].packY;
+			const endUnzipScroll = userListStartScroll + unzipDuration;
+			const futureStageY = scrollMetrics.stageYMultiplier * (1 - clamp(endUnzipScroll / scrollMetrics.moveDuration));
+			const deltaStage = futureStageY - activeState.stageY;
+			const futureIconCenterAbsY = iconCenterAbsY + deltaStage;
+			const futureTopItemAbsY = futureIconCenterAbsY + minPackY;
+			const futureWinTopAbsY = (cachedH / 2) - (metrics.operatorWindowH / 2);
+			totalDistanceForLastItem = futureTopItemAbsY - futureWinTopAbsY;
+			if (totalDistanceForLastItem < 1) totalDistanceForLastItem = 1;
+		}
+		for (let i = 0; i < count; i++) {
+			const item = nameElements[i];
+			let x, y, s;
+			if (unzipProgress > 0) {
+				const p = clamp((iconCenterAbsY + item.packY - winTopAbsY) / totalDistanceForLastItem);
+				x = lerp(targetX, finalWinX, p);
+				y = lerp(item.calcPackY, (iconHeight / 2) - activeState.stageY + listStartY + (item.sortIdx * listRowH), p);
+				s = lerp(destS, targetListScale, p);
+			}
+			else if (listProgress <= 0) {
+				const p = clamp((progressPack - (item.idx * 0.025)) * 3.33);
+				if (p === 0) {
+					if (item.visible) {
+						item.el.style.visibility = item.mirrorEl.style.visibility = "hidden";
+						item.visible = false;
+					}
+					continue;
+				}
+				const destY = iconTop + item.calcExplY + elevator;
+				x = lerp(item.startX, iconLeft + targetX, p) - iconLeft;
+				y = lerp(item.startY, destY, p) - curTop;
+				s = 1 + scaleBase * p;
+				if (i === 0) {
+					activeState.firstItemY = y;
+					activeState.firstItemScale = s;
+				}
+			}
+			else if (packProgress > 0) {
+				const p = clamp((packProgress - (item.sortIdx * 0.02)) * 2.5);
+				x = lerp(finalWinX, targetX, p);
+				y = lerp(item.winY, item.calcPackY, p);
+				s = lerp(targetListScale, destS, p);
+			}
+			else {
+				const p = clamp((listProgress - (item.sortIdx * 0.01)) / itemDuration);
+				x = lerp(targetX, finalWinX, p);
+				y = lerp(item.calcExplY, item.winY, p);
+				s = lerp(destS, targetListScale, p);
+			}
+			if (activeState.effectScale !== 1) {
+				s *= activeState.effectScale;
+				const centerX = metrics.iconWidth / 2;
+				const centerY = metrics.iconHeight / 2;
+				x = centerX + (x - centerX) * activeState.effectScale;
+				y = centerY + (y - centerY) * activeState.effectScale;
+			}
+			if (!item.visible) {
+				item.el.style.visibility = item.mirrorEl.style.visibility = "visible";
+				item.visible = true;
+			}
+			item.el.style.transform = item.mirrorEl.style.transform = `translate3d(${x}px,${y}px,0) translate(0,-50%) scale(${s})`;
+		}
+	}
+
+	function updateCursor(scrollY) {
+		if (!cursor) return;
+		const iconSvg = idWrap.querySelector("svg");
+		const shadowPath = document.getElementById("shadowPath");
+		const blurFilter = document.querySelector("#shadowBlur feGaussianBlur");
+		const listMain = document.getElementById("namesContainer");
+		if (!iconSvg || !listMain) return;
+		const {
+			cursorEntryStart,
+			cursorEntryDuration,
+			cursorEntryEnd,
+			cursorExitStart,
+			cursorExitDuration,
+			scaleUpStart,
+			scaleUpEnd,
+			scaleDownStart,
+			scaleDownEnd
+		} = scrollMetrics;
+		const winW = document.documentElement.clientWidth;
+		const winH = window.innerHeight;
+		const outX = winW * 0.8;
+		const centerX = winW / 2;
+		const centerY = (cachedH / 2) + activeState.stageY - activeState.exitOffset;
+		const rect = {
+			left: centerX - (metrics.iconWidth / 2),
+			top: centerY - (metrics.iconHeight / 2),
+			height: metrics.iconHeight
+		};
+		let fakeX = outX;
+		let fakeY = -cursor.offsetHeight;
+		let isFakeVisible = false;
+		if (scrollY >= cursorEntryStart && scrollY <= cursorEntryEnd) {
+			const p = (scrollY - cursorEntryStart) / cursorEntryDuration;
+			fakeX = lerp(outX, centerX, p);
+			fakeY = lerp(-(cursor.offsetHeight + rect.height), centerY, p);
+			isFakeVisible = true;
+		}
+		else if (scrollY > cursorEntryEnd && scrollY < cursorExitStart) {
+			fakeX = centerX;
+			fakeY = centerY;
+			isFakeVisible = true;
+		}
+		else if (scrollY >= cursorExitStart && scrollY <= (cursorExitStart + cursorExitDuration)) {
+			const p = (scrollY - cursorExitStart) / cursorExitDuration;
+			fakeX = lerp(centerX, outX, p);
+			fakeY = lerp(centerY, winH + rect.height, p);
+			isFakeVisible = true;
+		}
+		if (isFakeVisible) {
+			cursor.style.visibility = "visible";
+			cursor.style.transform = `translate3d(${fakeX}px, ${fakeY}px, 0)`;
+			activeState.cursorRelX = fakeX - rect.left;
+			activeState.cursorRelY = fakeY - rect.top;
+		}
+		else {
+			cursor.style.visibility = "hidden";
+		}
+		let effectStrength = 0;
+		if (scrollY >= scaleUpStart && scrollY <= scaleUpEnd) {
+			effectStrength = (scrollY - scaleUpStart) / (scaleUpEnd - scaleUpStart);
+		}
+		else if (scrollY > scaleUpEnd && scrollY < scaleDownStart) {
+			effectStrength = 1;
+		}
+		else if (scrollY >= scaleDownStart && scrollY <= scaleDownEnd) effectStrength = 1 - ((scrollY - scaleDownStart) / (scaleDownEnd - scaleDownStart));
+		effectStrength = Math.max(0, Math.min(1, effectStrength));
+		if (effectStrength > 0) {
+			iconSvg.style.transition = "none";
+			const scale = 1 + (effectStrength * 0.15);
+			const scaleString = `scale(${scale}) translateZ(0)`;
+			activeState.effectScale = scale;
+			iconSvg.style.transform = scaleString;
+			iconSvg.style.filter = "none";
+			const dx = (((mouse.x - centerX) / -(15 / uiScale)) * uiScale) * effectStrength;
+			const dy = (((mouse.y - centerY) / -(15 / uiScale)) * uiScale) * effectStrength;
+			activeState.cursorDx = dx;
+			activeState.cursorDy = dy;
+			if (shadowPath) {
+				shadowPath.style.opacity = 0.5 * effectStrength;
+				shadowPath.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
+			}
+			if (blurFilter) blurFilter.setAttribute("stdDeviation", Math.max(0, effectStrength * 25 * uiScale));
+		}
+		else {
+			activeState.effectScale = 1;
+			activeState.cursorDx = 0;
+			activeState.cursorDy = 0;
+			if (iconSvg.style.transform !== "none") {
+				iconSvg.style.transform = "none";
+				iconSvg.style.filter = "none";
+				if (shadowPath) {
+					shadowPath.style.opacity = 0;
+					shadowPath.style.transform = "none";
+				}
+			}
+		}
+	}
+
+	function updateHints(scrollY) {
+		const {
+			charUnit,
+			lineDuration
+		} = scrollMetrics;
+		const {
+			quarterW,
+			fifthW,
+			ninthW,
+			iconLeft
+		} = metrics;
+		const s = activeState;
+		const offset = ui.hintOffset;
+		const edgeGap = ui.edgeGap;
+		const minW = ui.hintMinW;
+		for (let i = 0; i < hintsConfig.length; i++) {
+			const conf = hintsConfig[i];
+			if (conf.startScroll === undefined) continue;
+			const isFinished = conf.eraseScroll && scrollY > (conf.eraseScroll + lineDuration + (conf.textLen * charUnit));
+			if (scrollY < conf.startScroll || isFinished) {
+				if (conf.elemLine.style.opacity !== "0") {
+					conf.elemLine.style.opacity = "0";
+					conf.elemText.style.opacity = "0";
+				}
+				continue;
+			}
+			const localScroll = scrollY - conf.startScroll;
+			let lineProgress = Math.min(1, Math.max(0, localScroll / lineDuration));
+			let charsToShow = localScroll > lineDuration ? Math.floor((localScroll - lineDuration) / charUnit) : 0;
+			if (conf.eraseScroll && scrollY > conf.eraseScroll) {
+				const eraseDist = scrollY - conf.eraseScroll;
+				const charsLeft = Math.max(0, conf.textLen - Math.floor(eraseDist / charUnit));
+				charsToShow = Math.min(charsToShow, charsLeft);
+				if (charsLeft === 0) lineProgress = Math.max(0, 1 - ((eraseDist - (conf.textLen * charUnit)) / lineDuration));
+			}
+			else charsToShow = Math.min(charsToShow, conf.textLen);
+			const isLineVisible = lineProgress > 0.001;
+			conf.elemLine.style.opacity = isLineVisible ? 1 : 0;
+			if (isLineVisible) {
+				const posCalc = hintPositions[conf.id];
+				const {
+					x: startX,
+					y: startY,
+					dy = 0
+				} = posCalc(s, metrics);
+				conf.elemLine.style.transform = `translate3d(${startX}px,${startY}px,0)`;
+				const dir = conf.side === "left" ? -1 : 1;
+				const cDir = conf.curveDir || 1;
+				const baseCpX = quarterW * dir * lineProgress;
+				const baseCpY = fifthW * cDir * lineProgress;
+				const targetEndX = (quarterW * dir) + (ninthW * dir - (quarterW * dir)) * lineProgress;
+				const targetEndY = (fifthW * cDir) + ((metrics.quarterW * cDir) - (fifthW * cDir)) * lineProgress;
+				const baseEndX = baseCpX + (targetEndX - baseCpX) * lineProgress;
+				const baseEndY = baseCpY + (targetEndY - baseCpY) * lineProgress;
+				const yOffset = dy * (1 - lineProgress);
+				const curCpX = baseCpX;
+				const curCpY = baseCpY + yOffset;
+				const curEndX = baseEndX;
+				const curEndY = baseEndY + yOffset;
+				const pathD = `M0,${dy}Q${curCpX},${curCpY} ${curEndX},${curEndY}`;
+				if (conf.prevD !== pathD) {
+					conf.elemPath.setAttribute("d", pathD);
+					conf.prevD = pathD;
+				}
+				const isTextVisible = charsToShow > 0 || (localScroll > lineDuration && lineProgress > 0.1);
+				conf.elemText.style.opacity = isTextVisible ? 1 : 0;
+				if (isTextVisible) {
+					if (conf.prevLen !== charsToShow) {
+						conf.elemText.textContent = conf.text.substring(0, charsToShow);
+						conf.prevLen = charsToShow;
+						const shouldType = charsToShow < conf.textLen && (!conf.eraseScroll || scrollY <= conf.eraseScroll);
+						if (conf.isTyping !== shouldType) {
+							conf.elemText.classList.toggle("typing", shouldType);
+							conf.isTyping = shouldType;
+						}
+					}
+					const isLeft = conf.side === "left";
+					const textX = startX + curEndX + (isLeft ? -offset : offset);
+					const textY = startY + curEndY;
+					conf.elemText.style.transform = `translate3d(${textX}px,${textY}px,0) translate(${isLeft ? -100 : 0}%,-50%)`;
+					conf.elemText.style.textAlign = isLeft ? "right" : "left";
+					const absTextX = iconLeft + textX;
+					const maxW = Math.max(minW, isLeft ? absTextX - edgeGap : cachedW - absTextX - edgeGap);
+					conf.elemText.style.maxWidth = maxW + "px";
+				}
+			}
+		}
+	}
+
+	function updateMasks() {
+		const overlay = document.getElementById("namesOverlay");
+		if (!overlay) return;
+		const wrapW = metrics.iconWidth;
+		const wrapH = metrics.iconHeight;
+		const getRect = (winW, winH, winY) => {
+			const rawRelY = (winY - activeState.stageY) + (wrapH - winH) / 2;
+			const rawRelX = (wrapW - winW) / 2;
+			return {
+				left: rawRelX,
+				top: rawRelY,
+				right: rawRelX + winW,
+				bottom: rawRelY + winH
+			};
+		};
+		const rects = [];
+		if (operatorWindowVisible) {
+			const r = getRect(metrics.operatorWindowW, metrics.operatorWindowH, activeState.operatorY);
+			rects.push(`${r.left}px ${r.top}px, ${r.right}px ${r.top}px, ${r.right}px ${r.bottom}px, ${r.left}px ${r.bottom}px, ${r.left}px ${r.top}px`);
+		}
+		if (serverWindowVisible) {
+			const r = getRect(metrics.operatorWindowW, metrics.serverH, activeState.serverY);
+			rects.push(`${r.left}px ${r.top}px, ${r.right}px ${r.top}px, ${r.right}px ${r.bottom}px, ${r.left}px ${r.bottom}px, ${r.left}px ${r.top}px`);
+		}
+		if (userWindowVisible) {
+			const r = getRect(metrics.operatorWindowW, metrics.operatorWindowH, activeState.userY);
+			rects.push(`${r.left}px ${r.top}px, ${r.right}px ${r.top}px, ${r.right}px ${r.bottom}px, ${r.left}px ${r.bottom}px, ${r.left}px ${r.top}px`);
+		}
+		if (rects.length === 0) {
+			overlay.style.clipPath = `polygon(0 0, 0 0, 0 0)`;
+		}
+		else overlay.style.clipPath = `polygon(${rects.join(", ")})`;
+	}
+
+	function updateMorph(scrollY) {
+		if (!morphTween) return;
+		let morphTime = 0;
+		if (scrollY < scrollMetrics.zipStart) {
+			if (scrollMetrics.morph1Duration) morphTime = clamp((scrollY - scrollMetrics.morphStart) / scrollMetrics.morph1Duration);
+		}
+		else if (scrollY < scrollMetrics.userListStartScroll) {
+			morphTime = 1;
+			if (scrollMetrics.zipDuration) morphTime += clamp((scrollY - scrollMetrics.zipStart) / scrollMetrics.zipDuration);
+		}
+		else {
+			let progress = 0;
+			if (scrollMetrics.unzipDuration) progress = clamp((scrollY - scrollMetrics.userListStartScroll) / scrollMetrics.unzipDuration);
+			morphTime = 2 - progress;
+		}
+		morphTween.seek(morphTime);
+	}
+
+	function updateProgressBar(scrollY) {
+		if (!progressContainer || !progressFill) return;
+		const barPackDuration = scrollMetrics.zipStart - scrollMetrics.packBackStart;
+		let barPackProgress = 0;
+		if (scrollY > scrollMetrics.packBackStart) barPackProgress = barPackDuration > 0 ? Math.min(1, (scrollY - scrollMetrics.packBackStart) / barPackDuration) : 1;
+		let listProgress = 0;
+		if (scrollY > scrollMetrics.listStartScroll) listProgress = Math.min(1, (scrollY - scrollMetrics.listStartScroll) / scrollMetrics.listDuration);
+		let waitP = 0;
+		if (scrollY > scrollMetrics.serverWaitStart) waitP = Math.min(1, (scrollY - scrollMetrics.serverWaitStart) / scrollMetrics.serverWaitDuration);
+		if (listProgress > 0 && barPackProgress < 1) {
+			progressContainer.style.opacity = 1;
+			if (barPackProgress > 0) {
+				progressFill.style.transformOrigin = "right center";
+				progressFill.style.transform = `scaleX(${1 - barPackProgress})`;
+			}
+			else {
+				progressFill.style.transformOrigin = "left center";
+				progressFill.style.transform = `scaleX(${listProgress})`;
+			}
+		}
+		else if (waitP > 0 && waitP < 1) {
+			progressContainer.style.opacity = 1;
+			progressFill.style.transformOrigin = "left center";
+			progressFill.style.transform = `translate3d(${-ui.progressChunk + ((metrics.iconWidth + ui.progressChunk) * waitP)}px, 0, 0) scaleX(${ui.progressChunk / metrics.iconWidth})`;
+		}
+		else progressContainer.style.opacity = 0;
+	}
+
+	function updateSteps(scrollY) {
+		if (stepElements.length === 0) return;
+		const {
+			stepsEntryStart,
+			stepsEntryDuration,
+			step1to2Start,
+			step2to3Start,
+			stepExitStart,
+			stepExitDuration,
+			stepStagger
+		} = scrollMetrics;
+		const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+		const ranges = [{
+			start: stepsEntryStart + stepsEntryDuration,
+			end: step1to2Start
+		}, {
+			start: step1to2Start,
+			end: step2to3Start
+		}, {
+			start: step2to3Start,
+			end: stepExitStart
+		}];
+		stepElements.forEach((el, i) => {
+			const myEntryStart = stepsEntryStart + (i * stepStagger);
+			let entryProg = 0;
+			if (scrollY > myEntryStart) entryProg = stepsEntryDuration > 0 ? Math.min(1, (scrollY - myEntryStart) / stepsEntryDuration) : 1;
+			const myExitEnd = (stepExitStart + stepExitDuration) + (i * stepStagger);
+			const myExitStart = myExitEnd - stepExitDuration;
+			let exitProg = 0;
+			if (scrollY > myExitStart) exitProg = stepExitDuration > 0 ? Math.min(1, (scrollY - myExitStart) / stepExitDuration) : 1;
+			const posFactor = clamp(entryProg - exitProg);
+			el.style.transform = `translateX(${lerp(-el.offsetWidth, rem, posFactor)}px)`;
+			el.style.opacity = 1;
+			const range = ranges[i];
+			let fillProgress = 0;
+			if (range && scrollY > range.start) {
+				const duration = range.end - range.start;
+				fillProgress = duration > 0 ? Math.min(1, (scrollY - range.start) / duration) : 1;
+			}
+			const fillEl = el.querySelector(".step-fill");
+			if (fillEl) fillEl.style.clipPath = `inset(0 ${100 - (fillProgress * 100)}% 0 0)`;
+			if (fillProgress >= 1) {
+				el.classList.add("is-done");
+			}
+			else el.classList.remove("is-done");
 		});
+	}
 
-		window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', handleThemeOrLanguageChange);
-		window.addEventListener('languagechange', handleThemeOrLanguageChange);
-		window.addEventListener('resize', positionElements);
-		setTimeout(positionElements, 100);
+	function updateSideLogo(scrollY) {
+		if (!sideLogo) return;
+		const start = scrollMetrics.userExitStart;
+		if (scrollY < start) {
+			const targetLeft = `${ui.logoMove}px`;
+			if (scrollY > 100 && sideLogo.style.left !== targetLeft) sideLogo.style.left = targetLeft;
+			return;
+		}
+		sideLogo.style.left = `${ui.logoMove - (ui.logoRange * (Math.min(1, (scrollY - start) / (scrollMetrics.userExitDuration / 2))))}px`;
+	}
+
+	function updateFinalLink(scrollY) {
+		if (scrollY < scrollMetrics.userExitStart) {
+			if (finalLink.style.visibility !== "hidden") {
+				finalLink.style.visibility = "hidden";
+				finalLink.style.transform = `translate(-50%, -50%) translate3d(0, ${cachedH * 1.5}px, 0)`;
+			}
+			return;
+		}
+		if (finalLink.style.visibility !== "visible") finalLink.style.visibility = "visible";
+		finalLink.style.transform = `translate(-50%, -50%) translate3d(0, ${(cachedH / 2) + ((1 - Math.min(1, (scrollY - scrollMetrics.userExitStart) / scrollMetrics.userExitDuration)) * cachedH)}px, 0)`;
+	}
+
+	function initShimmer() {
+		const link = document.getElementById("finalLink");
+		const floatProperty = (prop) => {
+			gsap.to(link, {
+				[prop]: `${Math.random() * 100}%`,
+				duration: 3 + Math.random() * 6,
+				ease: "sine.inOut",
+				onComplete: () => floatProperty(prop)
+			});
+		};
+		floatProperty("--x1");
+		floatProperty("--y1");
+		floatProperty("--x2");
+		floatProperty("--y2");
+	}
+	initShimmer();
+	let scrollTimeout;
+	window.addEventListener("scroll", () => {
+		const currentScroll = window.scrollY;
+		const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+		const isAtBottom = currentScroll >= maxScroll - 1;
+		if (currentScroll === 0) {
+			if (!introHints.active || introHints.mode !== "intro") {
+				clearTimeout(scrollTimeout);
+				scrollTimeout = setTimeout(() => {
+					if (window.scrollY === 0) {
+						introHints.setMode("intro");
+						introHints.start();
+					}
+				}, 5000);
+			}
+		}
+		else if (isAtBottom) {
+			if (!introHints.active || introHints.mode !== "outro") {
+				clearTimeout(scrollTimeout);
+				scrollTimeout = setTimeout(() => {
+					if (window.scrollY >= document.documentElement.scrollHeight - window.innerHeight - 1) {
+						introHints.setMode("outro");
+						introHints.start();
+					}
+				}, 5000);
+			}
+		}
+		else {
+			if (introHints.active) introHints.stop();
+			clearTimeout(scrollTimeout);
+		}
+		if (currentScroll > 0) gsap.killTweensOf(sideLogo);
+		if (currentScroll > 0 && isLogoVisible) {
+			animateLogoItems("up");
+			isLogoVisible = false;
+		}
+		else if (currentScroll === 0 && !isLogoVisible) {
+			animateLogoItems("down");
+			isLogoVisible = true;
+		}
+		if (!ticking) {
+			window.requestAnimationFrame(onScroll);
+			ticking = true;
+		}
+	}, {
+		passive: true
+	});
+	window.addEventListener("resize", () => onResize(false));
+	const cursorPathEl = document.getElementById("cursorPath");
+	const cursorContainer = document.getElementById("cursor");
+	const gearRotateTl = gsap.timeline({
+		paused: true,
+		repeat: -1,
+		defaults: {
+			ease: "none",
+			duration: 5
+		}
+	});
+	gearRotateTl.to("#gearTop", {
+		rotation: 360,
+		transformOrigin: "50% 50%"
+	}, 0).to("#gearBottom", {
+		rotation: -360,
+		transformOrigin: "50% 50%"
+	}, 0);
+	const morphAnim = gsap.to(cursorPathEl, {
+		morphSVG: icons.gears,
+		fill: "var(--hint)",
+		duration: 0.25,
+		ease: "none",
+		paused: true
+	});
+
+	function showGears() {
+		if (isHoveringGears) return;
+		isHoveringGears = true;
+		morphAnim.play().then(() => {
+			if (!isHoveringGears) return;
+			gsap.set("#cursorPath", {
+				opacity: 0
+			});
+			gsap.set("#gears", {
+				opacity: 1,
+				visibility: "visible"
+			});
+			gearRotateTl.restart();
+		});
+	}
+
+	function hideGears() {
+		if (!isHoveringGears) return;
+		isHoveringGears = false;
+		gsap.set("#gears", {
+			opacity: 0,
+			visibility: "hidden"
+		});
+		gearRotateTl.pause(0);
+		gsap.set("#cursorPath", {
+			opacity: 1
+		});
+		morphAnim.reverse();
+	}
+	if (canHover) {
+		cursorContainer.addEventListener("mouseenter", showGears);
+		cursorContainer.addEventListener("mouseleave", hideGears);
+	}
+	else {
+		cursorContainer.addEventListener("click", (e) => {
+			e.stopPropagation();
+			if (isHoveringGears) {
+				hideGears();
+			}
+			else showGears();
+		});
+		window.addEventListener("click", () => {
+			if (isHoveringGears) hideGears();
+		});
+	}
 	</script>
 </body>
 
