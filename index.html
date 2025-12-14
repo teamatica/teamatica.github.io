@@ -553,11 +553,13 @@
 	<script src="libs/gsap/3.13.0/MorphSVGPlugin.min.js"></script>
 	<script>
 	const canHover = window.matchMedia("(hover: hover)").matches;
-	const universalOffset = parseInt(window.getComputedStyle(document.getElementById("finalLink")).fontWeight);
-	let mouse = {
-		x: canHover ? window.innerWidth / 2 : (window.innerWidth / 2) + universalOffset,
-		y: canHover ? window.innerHeight / 2 : (window.innerHeight / 2) - universalOffset
-	};
+	let mouse = (() => {
+		const offset = parseInt(window.getComputedStyle(document.getElementById("finalLink")).fontWeight) || 0;
+		return {
+			x: canHover ? window.innerWidth / 2 : (window.innerWidth / 2) + offset,
+			y: canHover ? window.innerHeight / 2 : (window.innerHeight / 2) - offset
+		};
+	})();
 	window.addEventListener("mousemove", (e) => {
 		mouse.x = e.clientX;
 		mouse.y = e.clientY;
@@ -595,26 +597,27 @@
 		gears: "m381 488-35-21-3-6v-34a7 7 0 0 1 4-6l35-21q8-6 5-14l-10-25q-4-10-14-7l-39 10a7 7 0 0 1-7-2l-24-25-2-6 11-40q3-9-7-14l-24-10a11 11 0 0 0-15 5l-21 35-6 3h-34a7 7 0 0 1-6-4l-21-35q-5-8-14-5l-25 10q-9 4-7 14l10 39a7 7 0 0 1-2 7l-25 24q-2 2-6 2l-40-11a11 11 0 0 0-14 7l-10 24q-4 10 5 15l35 21q3 2 3 6v34a7 7 0 0 1-4 6l-35 21q-8 6-5 14l10 25q4 9 14 7l39-10q4 0 7 2l24 25 2 6-11 40q-2 9 7 14l24 10q10 4 15-5l21-35 6-3h34a7 7 0 0 1 6 4l21 35q5 8 14 5l25-10a11 11 0 0 0 7-14l-10-39a7 7 0 0 1 2-7l25-24 6-2 40 11q9 3 14-7l10-24a11 11 0 0 0-5-15m-147 13a63 63 0 0 1-82-35 63 63 0 0 1 35-82 62 62 0 0 1 82 35 62 62 0 0 1-35 82 M213 287a9 9 0 0 0 6-11l-8-33 2-6 20-19 6-1 32 9q8 2 12-5l9-20a9 9 0 0 0-4-13l-28-18q-3-2-3-5l1-28q0-3 3-5l30-16q7-4 4-12l-8-21a9 9 0 0 0-11-6l-33 8q-3 1-6-2l-19-20q-2-3-1-6l9-32q2-8-5-12l-20-9q-8-2-13 4l-18 28-5 3-28-1-5-3-16-30a9 9 0 0 0-12-4L83 9a9 9 0 0 0-6 11l8 33-2 6-20 19-6 1-32-9q-8-2-12 5L4 95q-2 8 4 13l28 18 3 5-1 28-3 5-30 16q-6 4-4 12l8 21a9 9 0 0 0 11 6l33-8 6 2 19 20 1 6-9 32q-2 8 5 12l20 9a9 9 0 0 0 13-4l18-28q1-3 5-3l28 1 5 3 16 30q4 7 12 4zm-47-90a52 52 0 0 1-67-31 52 52 0 0 1 31-67q20-7 39 2a52 52 0 0 1 26 68q-8 20-29 28"
 	};
 	idWrap.insertAdjacentHTML("afterbegin", `<svg viewBox="0 0 640 640"><defs><filter id="shadowBlur" x="-200%" y="-200%" width="400%" height="400%"><feGaussianBlur in="SourceGraphic" stdDeviation="0" result="blur" /></filter></defs><g><path id="shadowPath" d="${icons.xlsx}" fill="#000000" style="opacity: 0; filter: url(#shadowBlur); transform-origin: center center; will-change: transform, opacity;"></path><path id="iconPath" d="${icons.xlsx}" fill="var(--icon)" style="transform-origin: center center;"></path></g></svg>`);
-	const hintColors = {
-		0: "var(--fg)",
-		1: "var(--icon)",
-		2: "var(--icon)",
-		3: "var(--hint)",
-		4: "var(--window)",
-		5: "var(--window)",
-		6: "var(--window)",
-		7: "var(--server)",
-		8: "var(--window)",
-		9: "var(--window)",
-		10: "var(--window)",
-	};
-	const hintLines = Array.from({
-		length: 11
-	}, (_, i) => {
-		const isLeft = [1, 2, 3, 4, 9].includes(i);
-		return `<div class="hint-line" id="hintLine${i}"><svg><defs><linearGradient id="grad${i}" x1="${isLeft ? "100%" : "0%"}" y1="0%" x2="${isLeft ? "0%" : "100%"}" y2="0%"><stop offset="0%" stop-color="${hintColors[i] || "var(--hint)"}" /><stop offset="100%" stop-color="var(--hint)" /></linearGradient></defs><path id="hintPath${i}" fill="none" stroke-width="1" stroke="url(#grad${i})"></path></svg></div><div class="hint-text" id="hintText${i}"></div>`;
-	}).join("");
-	idWrap.insertAdjacentHTML("beforeend", hintLines);
+	(() => {
+		const hintColors = {
+			0: "var(--fg)",
+			1: "var(--icon)",
+			2: "var(--icon)",
+			3: "var(--hint)",
+			4: "var(--window)",
+			5: "var(--window)",
+			6: "var(--window)",
+			7: "var(--server)",
+			8: "var(--window)",
+			9: "var(--window)",
+			10: "var(--window)",
+		};
+		idWrap.insertAdjacentHTML("beforeend", Array.from({
+			length: 11
+		}, (_, i) => {
+			const isLeft = [1, 2, 3, 4, 9].includes(i);
+			return `<div class="hint-line" id="hintLine${i}"><svg><defs><linearGradient id="grad${i}" x1="${isLeft ? "100%" : "0%"}" y1="0%" x2="${isLeft ? "0%" : "100%"}" y2="0%"><stop offset="0%" stop-color="${hintColors[i] || "var(--hint)"}" /><stop offset="100%" stop-color="var(--hint)" /></linearGradient></defs><path id="hintPath${i}" fill="none" stroke-width="1" stroke="url(#grad${i})"></path></svg></div><div class="hint-text" id="hintText${i}"></div>`;
+		}).join(""));
+	})();
 	let isInitialized = false,
 		morphTween;
 	const colorWin = getComputedStyle(document.documentElement).getPropertyValue("--window").trim();
@@ -768,8 +771,7 @@
 			if (textIndex === -1) return;
 			const text = this.queue[textIndex];
 			const isLandscape = window.innerWidth > window.innerHeight;
-			const sourceAnchors = this.mode === "intro" ? this.anchors : this.outroAnchors;
-			const availableAnchors = sourceAnchors.filter(a => {
+			const availableAnchors = (this.mode === "intro" ? this.anchors : this.outroAnchors).filter(a => {
 				const anchorKey = this.mode === "intro" ? a.idx : a.id;
 				if (this.busyAnchors.has(anchorKey)) return false;
 				if (this.busySides.has(a.side)) return false;
@@ -804,33 +806,21 @@
 		},
 		mixColors(c1, c2, ratio) {
 			ratio = clamp(ratio);
-			const r = Math.round(c1[0] * (1 - ratio) + c2[0] * ratio);
-			const g = Math.round(c1[1] * (1 - ratio) + c2[1] * ratio);
-			const b = Math.round(c1[2] * (1 - ratio) + c2[2] * ratio);
-			return [r, g, b];
+			return [Math.round(c1[0] * (1 - ratio) + c2[0] * ratio), Math.round(c1[1] * (1 - ratio) + c2[1] * ratio), Math.round(c1[2] * (1 - ratio) + c2[2] * ratio)];
 		},
 		sampleGradientColor(el, relX, relY) {
-			const cBase = this.parseColor("var(--server)");
-			const cBlob1 = this.parseColor("var(--fg)");
-			const cBlob2 = this.parseColor("var(--window)");
 			const getVal = (prop) => parseFloat(el.style.getPropertyValue(prop)) || 50;
-			const x1 = getVal("--x1");
-			const y1 = getVal("--y1");
-			const x2 = getVal("--x2");
-			const y2 = getVal("--y2");
-			const dist1 = Math.sqrt(Math.pow(relX - x1, 2) + Math.pow(relY - y1, 2));
-			const dist2 = Math.sqrt(Math.pow(relX - x2, 2) + Math.pow(relY - y2, 2));
-			const radius = 45;
-			const strength1 = 1 - Math.min(1, dist1 / radius);
-			const strength2 = 1 - Math.min(1, dist2 / radius);
-			let finalColor = cBase;
-			if (strength2 > 0) finalColor = this.mixColors(finalColor, cBlob2, strength2);
-			if (strength1 > 0) finalColor = this.mixColors(finalColor, cBlob1, strength1);
+			const dist1 = Math.sqrt(Math.pow(relX - getVal("--x1"), 2) + Math.pow(relY - getVal("--y1"), 2));
+			const dist2 = Math.sqrt(Math.pow(relX - getVal("--x2"), 2) + Math.pow(relY - getVal("--y2"), 2));
+			const strength1 = 1 - Math.min(1, dist1 / 45);
+			const strength2 = 1 - Math.min(1, dist2 / 45);
+			let finalColor = this.parseColor("var(--server)");
+			if (strength2 > 0) finalColor = this.mixColors(finalColor, this.parseColor("var(--window)"), strength2);
+			if (strength1 > 0) finalColor = this.mixColors(finalColor, this.parseColor("var(--fg)"), strength1);
 			return `rgb(${finalColor[0]}, ${finalColor[1]}, ${finalColor[2]})`;
 		},
 		getStartColor(anchor, rect) {
 			if (this.mode === "outro") {
-				const el = document.getElementById("finalLink");
 				let pctX = 50,
 					pctY = 50;
 				if (anchor.side === "top") pctY = 0;
@@ -841,7 +831,7 @@
 					if (anchor.side === "top" || anchor.side === "bottom") pctX = anchor.pos * 100;
 					else pctY = anchor.pos * 100;
 				}
-				return this.sampleGradientColor(el, pctX, pctY);
+				return this.sampleGradientColor(document.getElementById("finalLink"), pctX, pctY);
 			}
 			if (!this.transparentIndices.includes(anchor.idx)) return "var(--window)";
 			const blended = this.mixColors(this.parseColor("var(--bg)"), this.parseColor("var(--window)"), 0.5);
@@ -859,7 +849,6 @@
 				if (!targetDot) return null;
 				rect = targetDot.getBoundingClientRect();
 			}
-			const winW = document.documentElement.clientWidth;
 			const startOffset = ui.introOffset;
 			const lineLen = ui.lineLen;
 			const offset = ui.hintOffset;
@@ -914,7 +903,7 @@
 				endX = startX - lineLen;
 				anchorX = endX - offset;
 				anchorY = endY;
-				styleRight = (winW - anchorX) + "px";
+				styleRight = (document.documentElement.clientWidth - anchorX) + "px";
 				transformAlign = "translate(0%, -50%)";
 				textAlign = "right";
 			}
@@ -946,9 +935,7 @@
 			hintObj.line.setAttribute("y1", geo.startY);
 			hintObj.line.setAttribute("x2", geo.endX);
 			hintObj.line.setAttribute("y2", geo.endY);
-			const strokeUrl = hintObj.line.getAttribute("stroke");
-			const gradId = strokeUrl.replace("url(#", "").replace(")", "");
-			const gradient = document.getElementById(gradId);
+			const gradient = document.getElementById(hintObj.line.getAttribute("stroke").replace("url(#", "").replace(")", ""));
 			if (gradient) {
 				gradient.setAttribute("x1", geo.startX);
 				gradient.setAttribute("y1", geo.startY);
@@ -961,17 +948,14 @@
 		},
 		createHint(anchor, text) {
 			this.activeCount++;
-			const anchorKey = this.mode === "intro" ? anchor.idx : anchor.id;
-			this.busyAnchors.add(anchorKey);
+			this.busyAnchors.add(this.mode === "intro" ? anchor.idx : anchor.id);
 			this.busySides.add(anchor.side);
 			this.activeTexts.add(text);
 			const geo = this.calculateGeometry(anchor);
 			if (!geo) return;
-			const startColor = this.getStartColor(anchor);
 			const uniqueId = `intro_grad_${Math.random().toString(36).substring(2, 9)}`;
 			const wrapper = document.createElement("div");
 			wrapper.className = "intro-hint-wrapper";
-			const svgHtml = `<svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"><defs><linearGradient id="${uniqueId}" gradientUnits="userSpaceOnUse" x1="${geo.startX}" y1="${geo.startY}" x2="${geo.endX}" y2="${geo.endY}"><stop offset="0%" stop-color="${startColor}" /><stop offset="100%" stop-color="var(--hint)" /></linearGradient></defs><line x1="${geo.startX}" y1="${geo.startY}" x2="${geo.endX}" y2="${geo.endY}" stroke="url(#${uniqueId})" stroke-width="${ui.strokeWidth}" stroke-dasharray="${geo.lineLen}" stroke-dashoffset="${geo.lineLen}" class="intro-line-path"></line></svg>`;
 			const textEl = document.createElement("div");
 			textEl.className = "intro-hint-text hint-text";
 			textEl.style.top = "0px";
@@ -981,7 +965,7 @@
 			textEl.style.transform = geo.finalTransform;
 			textEl.style.textAlign = geo.textAlign;
 			textEl.style.maxWidth = `${ui.introTextWidth}px`;
-			wrapper.innerHTML = svgHtml;
+			wrapper.innerHTML = `<svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%"><defs><linearGradient id="${uniqueId}" gradientUnits="userSpaceOnUse" x1="${geo.startX}" y1="${geo.startY}" x2="${geo.endX}" y2="${geo.endY}"><stop offset="0%" stop-color="${this.getStartColor(anchor)}" /><stop offset="100%" stop-color="var(--hint)" /></linearGradient></defs><line x1="${geo.startX}" y1="${geo.startY}" x2="${geo.endX}" y2="${geo.endY}" stroke="url(#${uniqueId})" stroke-width="${ui.strokeWidth}" stroke-dasharray="${geo.lineLen}" stroke-dashoffset="${geo.lineLen}" class="intro-line-path"></line></svg>`;
 			wrapper.appendChild(textEl);
 			this.layer.appendChild(wrapper);
 			const hintObj = {
@@ -1374,22 +1358,19 @@
 		stage.style.position = prevStagePos;
 		const {
 			width: W,
-			height: H,
-			left,
-			top
+			height: H
 		} = rect;
-		const count = nameElements.length;
 		const baseH = nameElements[0].el.offsetHeight;
 		const rowH = H * 0.03;
 		metrics.iconWidth = W;
 		metrics.iconHeight = H;
-		metrics.iconLeft = Math.round(left);
-		metrics.iconTop = Math.round(top + window.scrollY);
+		metrics.iconLeft = Math.round(rect.left);
+		metrics.iconTop = Math.round(rect.top + window.scrollY);
 		metrics.itemBaseHeight = baseH;
 		metrics.scaleBase = (rowH / baseH) - 1;
 		metrics.targetX = Math.round((W / 2) - (W * 0.255));
 		metrics.targetY = H / 2;
-		metrics.colSpacing = count > 1 ? Math.min((H * 0.8) / (count - 1), rowH * 2) : 0;
+		metrics.colSpacing = nameElements.length > 1 ? Math.min((H * 0.8) / (nameElements.length - 1), rowH * 2) : 0;
 		metrics.operatorWindowW = appRect.width;
 		metrics.operatorWindowH = appRect.height;
 		metrics.serverH = metrics.operatorWindowH / 2;
@@ -1408,10 +1389,8 @@
 		const newWidth = window.innerWidth;
 		if (!force && newWidth === cachedW) return;
 		cachedW = newWidth;
-		const stageContent = document.querySelector(".stage-content");
-		cachedH = stageContent ? stageContent.clientHeight : window.innerHeight;
-		const currentRem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-		uiScale = currentRem / 16;
+		cachedH = document.querySelector(".stage-content")?.clientHeight || window.innerHeight;
+		uiScale = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;
 		for (let key in defaults) ui[key] = defaults[key] * uiScale;
 		hintsConfig.forEach(conf => {
 			if (conf.elemPath) conf.elemPath.setAttribute("stroke-width", ui.strokeWidth);
@@ -1736,15 +1715,8 @@
 			iconCenterAbsY = iconRect.top + (iconRect.height / 2);
 			winTopAbsY = userWindow.getBoundingClientRect().top;
 			let minPackY = Infinity;
-			for (let i = 0; i < count; i++)
-				if (nameElements[i].packY < minPackY) minPackY = nameElements[i].packY;
-			const endUnzipScroll = userListStartScroll + unzipDuration;
-			const futureStageY = scrollMetrics.stageYMultiplier * (1 - clamp(endUnzipScroll / scrollMetrics.moveDuration));
-			const deltaStage = futureStageY - activeState.stageY;
-			const futureIconCenterAbsY = iconCenterAbsY + deltaStage;
-			const futureTopItemAbsY = futureIconCenterAbsY + minPackY;
-			const futureWinTopAbsY = (cachedH / 2) - (metrics.operatorWindowH / 2);
-			totalDistanceForLastItem = futureTopItemAbsY - futureWinTopAbsY;
+			for (let i = 0; i < count; i++) if (nameElements[i].packY < minPackY) minPackY = nameElements[i].packY;
+			totalDistanceForLastItem = (iconCenterAbsY + (scrollMetrics.stageYMultiplier * (1 - clamp((userListStartScroll + unzipDuration) / scrollMetrics.moveDuration)) - activeState.stageY) + minPackY) - ((cachedH / 2) - (metrics.operatorWindowH / 2));
 			if (totalDistanceForLastItem < 1) totalDistanceForLastItem = 1;
 		}
 		for (let i = 0; i < count; i++) {
@@ -1820,7 +1792,6 @@
 			scaleDownEnd
 		} = scrollMetrics;
 		const winW = document.documentElement.clientWidth;
-		const winH = window.innerHeight;
 		const outX = winW * 0.8;
 		const centerX = winW / 2;
 		const centerY = (cachedH / 2) + activeState.stageY - activeState.exitOffset;
@@ -1846,7 +1817,7 @@
 		else if (scrollY >= cursorExitStart && scrollY <= (cursorExitStart + cursorExitDuration)) {
 			const p = (scrollY - cursorExitStart) / cursorExitDuration;
 			fakeX = lerp(centerX, outX, p);
-			fakeY = lerp(centerY, winH + rect.height, p);
+			fakeY = lerp(centerY, window.innerHeight + rect.height, p);
 			isFakeVisible = true;
 		}
 		if (isFakeVisible) {
@@ -1871,9 +1842,8 @@
 		if (effectStrength > 0) {
 			iconSvg.style.transition = "none";
 			const scale = 1 + (effectStrength * 0.15);
-			const scaleString = `scale(${scale}) translateZ(0)`;
 			activeState.effectScale = scale;
-			iconSvg.style.transform = scaleString;
+			iconSvg.style.transform = `scale(${scale}) translateZ(0)`;
 			iconSvg.style.filter = "none";
 			const dx = (((mouse.x - centerX) / -(15 / uiScale)) * uiScale) * effectStrength;
 			const dy = (((mouse.y - centerY) / -(15 / uiScale)) * uiScale) * effectStrength;
@@ -1918,16 +1888,21 @@
 		for (let i = 0; i < hintsConfig.length; i++) {
 			const conf = hintsConfig[i];
 			if (conf.startScroll === undefined) continue;
-			const isFinished = conf.eraseScroll && scrollY > (conf.eraseScroll + lineDuration + (conf.textLen * charUnit) + 1);
-			if (scrollY < conf.startScroll || isFinished) {
-				if (conf.elemLine.style.visibility !== "hidden") {
+			if (scrollY < conf.startScroll || scrollY > (conf.eraseScroll ? (conf.eraseScroll + lineDuration + (conf.textLen * charUnit)) : Infinity)) {
+				if (!conf.isHidden) {
 					conf.elemLine.style.opacity = "0";
-					conf.elemLine.style.visibility = "hidden";
 					conf.elemText.style.opacity = "0";
+					conf.elemLine.style.visibility = "hidden";
 					conf.elemText.style.visibility = "hidden";
+					conf.elemLine.style.transform = "translate3d(-9999px, -9999px, 0)";
+					conf.elemText.style.transform = "translate3d(-9999px, -9999px, 0)";
+					if (conf.elemText.textContent !== "") conf.elemText.textContent = "";
+					conf.prevLen = -1;
+					conf.isHidden = true;
 				}
 				continue;
 			}
+			conf.isHidden = false;
 			const localScroll = scrollY - conf.startScroll;
 			let lineProgress = Math.min(1, Math.max(0, localScroll / lineDuration));
 			let charsToShow = localScroll > lineDuration ? Math.floor((localScroll - lineDuration) / charUnit) : 0;
@@ -1939,8 +1914,8 @@
 			}
 			else charsToShow = Math.min(charsToShow, conf.textLen);
 			const isLineVisible = lineProgress > 0.001;
-			conf.elemLine.style.opacity = isLineVisible ? 1 : 0;
 			conf.elemLine.style.visibility = isLineVisible ? "visible" : "hidden";
+			conf.elemLine.style.opacity = isLineVisible ? 1 : 0;
 			if (isLineVisible) {
 				const {
 					x: startX,
@@ -1952,19 +1927,17 @@
 				const cDir = conf.curveDir || 1;
 				const baseCpX = quarterW * dir * lineProgress;
 				const baseCpY = fifthW * cDir * lineProgress;
+				const baseEndX = baseCpX + (((quarterW * dir) + (ninthW * dir - (quarterW * dir)) * lineProgress) - baseCpX) * lineProgress;
+				const baseEndY = baseCpY + (((fifthW * cDir) + ((metrics.quarterW * cDir) - (fifthW * cDir)) * lineProgress) - baseCpY) * lineProgress;
 				const yOffset = dy * (1 - lineProgress);
-				const curCpX = baseCpX;
-				const curCpY = baseCpY + yOffset;
-				const curEndX = baseCpX + (((quarterW * dir) + (ninthW * dir - (quarterW * dir)) * lineProgress) - baseCpX) * lineProgress;
-				const curEndY = baseCpY + (((fifthW * cDir) + ((metrics.quarterW * cDir) - (fifthW * cDir)) * lineProgress) - baseCpY) * lineProgress + yOffset;
-				const pathD = `M0,${dy}Q${baseCpX},${baseCpY + yOffset} ${curEndX},${curEndY}`;
+				const pathD = `M0,${dy}Q${baseCpX},${baseCpY + yOffset} ${baseEndX},${baseEndY + yOffset}`;
 				if (conf.prevD !== pathD) {
 					conf.elemPath.setAttribute("d", pathD);
 					conf.prevD = pathD;
 				}
 				const isTextVisible = charsToShow > 0 || (localScroll > lineDuration && lineProgress > 0.1);
-				conf.elemText.style.opacity = isTextVisible ? 1 : 0;
 				conf.elemText.style.visibility = isTextVisible ? "visible" : "hidden";
+				conf.elemText.style.opacity = isTextVisible ? 1 : 0;
 				if (isTextVisible) {
 					if (conf.prevLen !== charsToShow) {
 						conf.elemText.textContent = conf.text.substring(0, charsToShow);
@@ -1976,13 +1949,15 @@
 						}
 					}
 					const isLeft = conf.side === "left";
-					const textX = startX + curEndX + (isLeft ? -offset : offset);
-					conf.elemText.style.transform = `translate3d(${textX}px,${startY + curEndY}px,0) translate(${isLeft ? -100 : 0}%,-50%)`;
+					const textX = startX + baseEndX + (isLeft ? -offset : offset);
+					conf.elemText.style.transform = `translate3d(${textX}px,${startY + baseEndY + yOffset}px,0) translate(${isLeft ? -100 : 0}%,-50%)`;
 					conf.elemText.style.textAlign = isLeft ? "right" : "left";
 					const absTextX = iconLeft + textX;
 					conf.elemText.style.maxWidth = Math.max(minW, isLeft ? absTextX - edgeGap : cachedW - absTextX - edgeGap) + "px";
 				}
+				else conf.elemText.style.transform = "translate3d(-9999px, -9999px, 0)";
 			}
+			else conf.elemLine.style.transform = "translate3d(-9999px, -9999px, 0)";
 		}
 	}
 
@@ -2030,11 +2005,7 @@
 			morphTime = 1;
 			if (scrollMetrics.zipDuration) morphTime += clamp((scrollY - scrollMetrics.zipStart) / scrollMetrics.zipDuration);
 		}
-		else {
-			let progress = 0;
-			if (scrollMetrics.unzipDuration) progress = clamp((scrollY - scrollMetrics.userListStartScroll) / scrollMetrics.unzipDuration);
-			morphTime = 2 - progress;
-		}
+		else morphTime = 2 - (scrollMetrics.unzipDuration ? clamp((scrollY - scrollMetrics.userListStartScroll) / scrollMetrics.unzipDuration) : 0);
 		morphTween.seek(morphTime);
 	}
 
