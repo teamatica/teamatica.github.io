@@ -1,4 +1,4 @@
-<!-- special thanks to: alwaysdata.com, beautifier.io, chatgpt.com, claude.ai, gemini.google, github.com, gsap.com, jakearchibald.github.io -->
+<!-- special thanks to: alwaysdata.com, beautifier.io, chatgpt.com, claude.ai, gemini.google, github.com, gsap.com, jakearchibald.github.io, svgrepo.com -->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -549,17 +549,14 @@
 		</div>
 	</main>
 	<a href="https://teamatica.org" target="_blank" class="final-link" id="finalLink" aria-label="Teamatica" title="Teamatica"><span>teamatica.org</span></a>
-	<script src="libs/gsap/3.13.0/gsap.min.js"></script>
-	<script src="libs/gsap/3.13.0/MorphSVGPlugin.min.js"></script>
+	<script src="libs/gsap/3.14.0/gsap.min.js"></script>
+	<script src="libs/gsap/3.14.0/MorphSVGPlugin.min.js"></script>
 	<script>
 	const canHover = window.matchMedia("(hover: hover)").matches;
-	let mouse = (() => {
-		const offset = parseInt(window.getComputedStyle(document.getElementById("finalLink")).fontWeight) || 0;
-		return {
-			x: canHover ? window.innerWidth / 2 : (window.innerWidth / 2) + offset,
-			y: canHover ? window.innerHeight / 2 : (window.innerHeight / 2) - offset
-		};
-	})();
+	let mouse = {
+		x: canHover ? window.innerWidth / 2 : (window.innerWidth / 2) + 1000,
+		y: canHover ? window.innerHeight / 2 : (window.innerHeight / 2) - 1000
+	};
 	window.addEventListener("mousemove", (e) => {
 		mouse.x = e.clientX;
 		mouse.y = e.clientY;
@@ -772,12 +769,8 @@
 			const text = this.queue[textIndex];
 			const isLandscape = window.innerWidth > window.innerHeight;
 			const availableAnchors = (this.mode === "intro" ? this.anchors : this.outroAnchors).filter(a => {
-				const anchorKey = this.mode === "intro" ? a.idx : a.id;
-				if (this.busyAnchors.has(anchorKey)) return false;
-				if (this.busySides.has(a.side)) return false;
-				if (anchorKey === excludeId) return false;
-				if (isLandscape ? (a.side === "top" || a.side === "bottom") : (a.side === "left" || a.side === "right")) return false;
-				return true;
+				const key = this.mode === "intro" ? a.idx : a.id;
+				return !this.busyAnchors.has(key) && !this.busySides.has(a.side) && key !== excludeId && !((window.innerWidth > window.innerHeight) ? (a.side === "top" || a.side === "bottom") : (a.side === "left" || a.side === "right"));
 			});
 			if (availableAnchors.length === 0) {
 				setTimeout(() => this.spawn(), 100);
@@ -788,8 +781,7 @@
 			this.createHint(availableAnchors[Math.floor(Math.random() * availableAnchors.length)], text);
 		},
 		addToHistory(text) {
-			this.history.push(text);
-			if (this.history.length > this.historyLimit) this.history.shift();
+			if (this.history.push(text) > this.historyLimit) this.history.shift();
 		},
 		parseColor(str) {
 			if (!str) return [0, 0, 0];
@@ -797,7 +789,6 @@
 			if (str.startsWith("var(--")) str = getComputedStyle(document.documentElement).getPropertyValue(str.slice(4, -1)).trim();
 			if (str.startsWith("#")) {
 				let hex = str.substring(1);
-				if (hex.length === 3) hex = hex[0] + hex[0] + hex[1] + hex[1] + hex[2] + hex[2];
 				const bigint = parseInt(hex, 16);
 				return [(bigint >> 16) & 255, (bigint >> 8) & 255, bigint & 255];
 			}
@@ -806,12 +797,12 @@
 		},
 		mixColors(c1, c2, ratio) {
 			ratio = clamp(ratio);
-			return [Math.round(c1[0] * (1 - ratio) + c2[0] * ratio), Math.round(c1[1] * (1 - ratio) + c2[1] * ratio), Math.round(c1[2] * (1 - ratio) + c2[2] * ratio)];
+			return c1.map((v, i) => Math.round(v * (1 - ratio) + c2[i] * ratio));
 		},
 		sampleGradientColor(el, relX, relY) {
 			const getVal = (prop) => parseFloat(el.style.getPropertyValue(prop)) || 50;
-			const dist1 = Math.sqrt(Math.pow(relX - getVal("--x1"), 2) + Math.pow(relY - getVal("--y1"), 2));
-			const dist2 = Math.sqrt(Math.pow(relX - getVal("--x2"), 2) + Math.pow(relY - getVal("--y2"), 2));
+			const dist1 = Math.hypot(relX - getVal("--x1"), relY - getVal("--y1"));
+			const dist2 = Math.hypot(relX - getVal("--x2"), relY - getVal("--y2"));
 			const strength1 = 1 - Math.min(1, dist1 / 45);
 			const strength2 = 1 - Math.min(1, dist2 / 45);
 			let finalColor = this.parseColor("var(--server)");
@@ -841,7 +832,7 @@
 			let rect;
 			if (this.mode === "outro") {
 				const el = document.getElementById("finalLink");
-				if (!el || el.offsetWidth === 0) return null;
+				if (!el?.offsetWidth) return null;
 				rect = el.getBoundingClientRect();
 			}
 			else {
@@ -981,38 +972,29 @@
 			const charS = this.config.charSpeed;
 			const len = text.length;
 			const typeDuration = len * charS;
-			const tl = gsap.timeline({
+			hintObj.tl = gsap.timeline({
 				onComplete: () => this.removeHint(hintObj)
-			});
-			hintObj.tl = tl;
-			tl.to(hintObj.line, {
+			}).to(hintObj.line, {
 				strokeDashoffset: 0,
 				duration: charS * this.config.lineFactor,
 				ease: "none"
-			});
-			tl.to(textEl, {
+			}).to(textEl, {
 				duration: typeDuration,
 				onUpdate: function() {
-					const chars = Math.floor(this.progress() * len);
-					textEl.textContent = text.substring(0, chars);
-					textEl.classList.toggle("typing", chars < len);
+					textEl.textContent = text.substring(0, Math.floor(this.progress() * len));
+					textEl.classList.toggle("typing", this.progress() < 1);
 				},
 				ease: "none"
-			});
-			tl.to({}, {
+			}).to({}, {
 				duration: len * charS
-			});
-			tl.to(textEl, {
+			}).to(textEl, {
 				duration: typeDuration / 3,
-				onStart: function() {
-					textEl.classList.remove("typing");
-				},
+				onStart: () => textEl.classList.remove("typing"),
 				onUpdate: function() {
 					textEl.textContent = text.substring(0, Math.floor((1 - this.progress()) * len));
 				},
 				ease: "none"
-			});
-			tl.to(hintObj.line, {
+			}).to(hintObj.line, {
 				strokeDashoffset: geo.lineLen,
 				duration: 0.2,
 				ease: "none"
@@ -1021,7 +1003,7 @@
 		forceExit(hintObj) {
 			if (hintObj.isExiting) return;
 			hintObj.isExiting = true;
-			if (hintObj.tl) hintObj.tl.kill();
+			hintObj.tl?.kill();
 			const textContent = hintObj.textEl.textContent;
 			const geo = this.calculateGeometry(hintObj.anchor);
 			const exitDuration = textContent.length * this.config.charSpeed;
@@ -1229,27 +1211,26 @@
 			y: (m.iconHeight / 2) + s.userY - s.stageY + (m.operatorWindowH / 2) + ui.smallGap
 		})
 	};
-	const hintsConfig = Array.from(document.querySelectorAll(".hint-line")).map((elemLine, i) => {
-		const id = i;
+	const hintsConfig = Array.from(document.querySelectorAll(".hint-line"), (elemLine, i) => {
 		return {
-			id: `hint${id}`,
+			id: `hint${i}`,
+			posFunc: hintPositions[`hint${i}`],
 			elemLine: elemLine,
-			elemPath: document.getElementById(`hintPath${id}`),
-			elemText: document.getElementById(`hintText${id}`),
-			side: [1, 2, 3, 4, 9].includes(id) ? "left" : "right",
+			elemPath: document.getElementById(`hintPath${i}`),
+			elemText: document.getElementById(`hintText${i}`),
+			side: [1, 2, 3, 4, 9].includes(i) ? "left" : "right",
 			prevD: null,
 			prevLen: -1,
 			startScroll: 0,
 			eraseScroll: 0,
 			text: "",
 			textLen: 0,
-			curveDir: [1, 3, 4, 6, 9].includes(id) ? -1 : 1
+			curveDir: [1, 3, 4, 6, 9].includes(i) ? -1 : 1
 		};
 	});
 
 	function loadLocaleData() {
-		const code = navigator.language.slice(0, 2).toLowerCase();
-		const currentLang = "en ru".split(" ").includes(code) ? code : "en";
+		const currentLang = (navigator.language.slice(0, 2).toLowerCase().match(/^(be|bg|cs|da|de|el|en|es|fi|fr|hr|hu|it|kk|nb|nl|pl|pt|ro|ru|sr|sv|tr|uk|uz)$/) || ["en"])[0];
 		document.documentElement.lang = currentLang;
 		fetch(`/locales/${currentLang}.json`).then(res => res.ok ? res.json() : Promise.reject(res)).then(data => {
 			initNames(data.names, currentLang);
@@ -1276,14 +1257,12 @@
 	function initSteps(steps) {
 		stepsContainer.innerHTML = "";
 		stepElements = [];
-		if (!steps || !steps.length) return;
-		steps.forEach(text => {
-			const el = document.createElement("div");
-			el.className = "step-item";
-			el.innerHTML = `<div class="step-text-wrap"><span class="step-base">${text}</span><span class="step-fill">${text}</span></div><svg class="step-check-svg" viewBox="0 0 24 24"><path class="step-check-path" d="M5 13l4 4L19 7"></path></svg>`;
-			stepsContainer.appendChild(el);
-			stepElements.push(el);
-		});
+		if (!steps?.length) return;
+		stepsContainer.innerHTML = steps.map(text => `<div class="step-item"><div class="step-text-wrap"><span class="step-base">${text}</span><span class="step-fill">${text}</span></div><svg class="step-check-svg" viewBox="0 0 24 24"><path class="step-check-path" d="M5 13l4 4L19 7"></path></svg></div>`).join("");
+		stepElements = Array.from(stepsContainer.children, el => ({
+			el,
+			fill: el.querySelector(".step-fill")
+		}));
 	}
 
 	function initNames(names, langCode) {
@@ -1296,18 +1275,14 @@
 			name,
 			i
 		})).sort((a, b) => {
-			const len = Math.min(a.name.length, b.name.length);
-			for (let k = 0; k < len; k++) {
-				const diff = collator.compare(a.name[k], b.name[k]);
-				if (diff !== 0) return diff;
-			}
+			for (let k = 0, len = Math.min(a.name.length, b.name.length), d; k < len; k++)
+				if (d = collator.compare(a.name[k], b.name[k])) return d;
 			return a.name.length - b.name.length;
 		});
 		const sortMap = new Int32Array(names.length);
 		sorted.forEach((item, sIdx) => sortMap[item.i] = sIdx);
 		namesContainer.innerHTML = names.map(name => `<div class="name-item" style="visibility:hidden">${name}</div>`).join("");
-		const oldOverlay = document.getElementById("namesOverlay");
-		if (oldOverlay) oldOverlay.remove();
+		document.getElementById("namesOverlay")?.remove();
 		const overlay = namesContainer.cloneNode(true);
 		overlay.id = "namesOverlay";
 		overlay.classList.add("overlay-white");
@@ -1340,10 +1315,10 @@
 			baseH = firstEl.offsetHeight;
 		const totalDist = endX - startX,
 			step = count > 1 ? 1 / (count - 1) : 0;
-		for (let i = 0; i < count; i++) {
-			nameElements[i].startX = startX + (totalDist * (i * step));
-			nameElements[i].startY = -baseH;
-		}
+		nameElements.forEach((item, i) => {
+			item.startX = startX + (totalDist * (i * step));
+			item.startY = -baseH;
+		});
 	}
 
 	function updateMetrics() {
@@ -1368,9 +1343,10 @@
 		metrics.iconTop = Math.round(rect.top + window.scrollY);
 		metrics.itemBaseHeight = baseH;
 		metrics.scaleBase = (rowH / baseH) - 1;
-		metrics.targetX = Math.round((W / 2) - (W * 0.255));
+		metrics.targetX = Math.round(W * 0.245);
 		metrics.targetY = H / 2;
 		metrics.colSpacing = nameElements.length > 1 ? Math.min((H * 0.8) / (nameElements.length - 1), rowH * 2) : 0;
+		metrics.minPackY = -((nameElements.length - 1) / 2) * metrics.colSpacing;
 		metrics.operatorWindowW = appRect.width;
 		metrics.operatorWindowH = appRect.height;
 		metrics.serverH = metrics.operatorWindowH / 2;
@@ -1392,9 +1368,7 @@
 		cachedH = document.querySelector(".stage-content")?.clientHeight || window.innerHeight;
 		uiScale = parseFloat(getComputedStyle(document.documentElement).fontSize) / 16;
 		for (let key in defaults) ui[key] = defaults[key] * uiScale;
-		hintsConfig.forEach(conf => {
-			if (conf.elemPath) conf.elemPath.setAttribute("stroke-width", ui.strokeWidth);
-		});
+		hintsConfig.forEach(conf => conf.elemPath?.setAttribute("stroke-width", ui.strokeWidth));
 		if (nameElements.length === 0) return;
 		calcPositions();
 		updateMetrics();
@@ -1465,10 +1439,7 @@
 		scrollMetrics.userContactP = clamp(1 - (((metrics.iconHeight / 2) + (metrics.operatorWindowH / 2)) / ((cachedH / 2) + (metrics.operatorWindowH / 2))));
 		scrollMetrics.userListStartScroll = (scrollMetrics.serverExitStart + (scrollMetrics.serverExitDuration * 0.5)) + ((scrollMetrics.serverExitDuration * 0.5) * scrollMetrics.userContactP);
 		scrollMetrics.unzipDuration = (scrollMetrics.serverExitDuration * 0.5) * (1 - scrollMetrics.userContactP);
-		const mainContainer = document.querySelector(".scrolly");
-		mainContainer.style.height = (scrollMetrics.userExitStart + scrollMetrics.userExitDuration + cachedH + charUnit) + "px";
-		mainContainer.style.minHeight = "0px";
-		mainContainer.style.paddingBottom = "0px";
+		document.querySelector(".scrolly").style.cssText = `height: ${scrollMetrics.userExitStart + scrollMetrics.userExitDuration + cachedH + charUnit}px; min-height: 0px; padding-bottom: 0px`;
 		const half = (nameElements.length - 1) / 2;
 		const listBaseY = (metrics.iconHeight / 2) + scrollMetrics.listStartY;
 		metrics.finalWinX = (metrics.iconWidth / 2) + scrollMetrics.listStartX;
@@ -1620,7 +1591,7 @@
 		}
 		else {
 			serverBackup.style.opacity = "0";
-			while (backupState.namesContainer && backupState.namesContainer.firstChild) backupState.namesContainer.removeChild(backupState.namesContainer.firstChild);
+			backupState.namesContainer?.replaceChildren();
 			backupState.count = 0;
 		}
 		if (serverEnterP <= 0) {
@@ -1707,23 +1678,21 @@
 		const curTop = iconTop + activeState.stageY;
 		const elevator = iconHeight * (1 - clamp(scrollY / moveDuration));
 		const destS = 1 + scaleBase;
-		let iconCenterAbsY = 0;
-		let winTopAbsY = 0;
-		let totalDistanceForLastItem = 1;
+		let iconCenter = 0;
+		let winTop = 0;
+		let totalDistance = 1;
 		if (unzipProgress > 0) {
 			const iconRect = idWrap.getBoundingClientRect();
-			iconCenterAbsY = iconRect.top + (iconRect.height / 2);
-			winTopAbsY = userWindow.getBoundingClientRect().top;
-			let minPackY = Infinity;
-			for (let i = 0; i < count; i++) if (nameElements[i].packY < minPackY) minPackY = nameElements[i].packY;
-			totalDistanceForLastItem = (iconCenterAbsY + (scrollMetrics.stageYMultiplier * (1 - clamp((userListStartScroll + unzipDuration) / scrollMetrics.moveDuration)) - activeState.stageY) + minPackY) - ((cachedH / 2) - (metrics.operatorWindowH / 2));
-			if (totalDistanceForLastItem < 1) totalDistanceForLastItem = 1;
+			iconCenter = iconRect.top + (iconRect.height / 2);
+			winTop = userWindow.getBoundingClientRect().top;
+			totalDistance = (iconCenter + (scrollMetrics.stageYMultiplier * (1 - clamp((userListStartScroll + unzipDuration) / scrollMetrics.moveDuration)) - activeState.stageY) + metrics.minPackY) - ((cachedH / 2) - (metrics.operatorWindowH / 2));
+			if (totalDistance < 1) totalDistance = 1;
 		}
 		for (let i = 0; i < count; i++) {
 			const item = nameElements[i];
 			let x, y, s;
 			if (unzipProgress > 0) {
-				const p = clamp((iconCenterAbsY + item.packY - winTopAbsY) / totalDistanceForLastItem);
+				const p = clamp((iconCenter + item.packY - winTop) / totalDistance);
 				x = lerp(targetX, finalWinX, p);
 				y = lerp(item.calcPackY, (iconHeight / 2) - activeState.stageY + listStartY + (item.sortIdx * listRowH), p);
 				s = lerp(destS, targetListScale, p);
@@ -1795,18 +1764,13 @@
 		const outX = winW * 0.8;
 		const centerX = winW / 2;
 		const centerY = (cachedH / 2) + activeState.stageY - activeState.exitOffset;
-		const rect = {
-			left: centerX - (metrics.iconWidth / 2),
-			top: centerY - (metrics.iconHeight / 2),
-			height: metrics.iconHeight
-		};
 		let fakeX = outX;
 		let fakeY = -cursor.offsetHeight;
 		let isFakeVisible = false;
 		if (scrollY >= cursorEntryStart && scrollY <= cursorEntryEnd) {
 			const p = (scrollY - cursorEntryStart) / cursorEntryDuration;
 			fakeX = lerp(outX, centerX, p);
-			fakeY = lerp(-(cursor.offsetHeight + rect.height), centerY, p);
+			fakeY = lerp(-(cursor.offsetHeight + metrics.iconHeight), centerY, p);
 			isFakeVisible = true;
 		}
 		else if (scrollY > cursorEntryEnd && scrollY < cursorExitStart) {
@@ -1817,14 +1781,14 @@
 		else if (scrollY >= cursorExitStart && scrollY <= (cursorExitStart + cursorExitDuration)) {
 			const p = (scrollY - cursorExitStart) / cursorExitDuration;
 			fakeX = lerp(centerX, outX, p);
-			fakeY = lerp(centerY, window.innerHeight + rect.height, p);
+			fakeY = lerp(centerY, window.innerHeight + metrics.iconHeight, p);
 			isFakeVisible = true;
 		}
 		if (isFakeVisible) {
 			cursor.style.visibility = "visible";
 			cursor.style.transform = `translate3d(${fakeX}px, ${fakeY}px, 0)`;
-			activeState.cursorRelX = fakeX - rect.left;
-			activeState.cursorRelY = fakeY - rect.top;
+			activeState.cursorRelX = fakeX - (centerX - metrics.iconWidth / 2);
+			activeState.cursorRelY = fakeY - (centerY - metrics.iconHeight / 2);
 		}
 		else {
 			cursor.style.visibility = "hidden";
@@ -1845,15 +1809,15 @@
 			activeState.effectScale = scale;
 			iconSvg.style.transform = `scale(${scale}) translateZ(0)`;
 			iconSvg.style.filter = "none";
-			const dx = (((mouse.x - centerX) / -(15 / uiScale)) * uiScale) * effectStrength;
-			const dy = (((mouse.y - centerY) / -(15 / uiScale)) * uiScale) * effectStrength;
+			const dx = ((mouse.x - centerX) * effectStrength) / -15;
+			const dy = ((mouse.y - centerY) * effectStrength) / -15;
 			activeState.cursorDx = dx;
 			activeState.cursorDy = dy;
 			if (shadowPath) {
-				shadowPath.style.opacity = 0.5 * effectStrength;
+				shadowPath.style.opacity = 0.6 - (0.3 * effectStrength);
 				shadowPath.style.transform = `translate3d(${dx}px, ${dy}px, 0)`;
 			}
-			if (blurFilter) blurFilter.setAttribute("stdDeviation", Math.max(0, effectStrength * 25 * uiScale));
+			if (blurFilter) blurFilter.setAttribute("stdDeviation", Math.max(0, effectStrength * 20 * uiScale));
 		}
 		else {
 			activeState.effectScale = 1;
@@ -1921,7 +1885,7 @@
 					x: startX,
 					y: startY,
 					dy = 0
-				} = hintPositions[conf.id](s, metrics);
+				} = conf.posFunc(s, metrics);
 				conf.elemLine.style.transform = `translate3d(${startX}px,${startY}px,0)`;
 				const dir = conf.side === "left" ? -1 : 1;
 				const cDir = conf.curveDir || 1;
@@ -1966,33 +1930,18 @@
 		if (!overlay) return;
 		const wrapW = metrics.iconWidth;
 		const wrapH = metrics.iconHeight;
-		const getRect = (winW, winH, winY) => {
-			const rawRelY = (winY - activeState.stageY) + (wrapH - winH) / 2;
-			const rawRelX = (wrapW - winW) / 2;
-			return {
-				left: rawRelX,
-				top: rawRelY,
-				right: rawRelX + winW,
-				bottom: rawRelY + winH
-			};
+		const getRect = (w, h, y) => {
+			const T = (y - activeState.stageY) + (wrapH - h) / 2;
+			const L = (wrapW - w) / 2;
+			const R = L + w,
+				B = T + h;
+			return `${L}px ${T}px, ${R}px ${T}px, ${R}px ${B}px, ${L}px ${B}px, ${L}px ${T}px`;
 		};
 		const rects = [];
-		if (operatorWindowVisible) {
-			const r = getRect(metrics.operatorWindowW, metrics.operatorWindowH, activeState.operatorY);
-			rects.push(`${r.left}px ${r.top}px, ${r.right}px ${r.top}px, ${r.right}px ${r.bottom}px, ${r.left}px ${r.bottom}px, ${r.left}px ${r.top}px`);
-		}
-		if (serverWindowVisible) {
-			const r = getRect(metrics.operatorWindowW, metrics.serverH, activeState.serverY);
-			rects.push(`${r.left}px ${r.top}px, ${r.right}px ${r.top}px, ${r.right}px ${r.bottom}px, ${r.left}px ${r.bottom}px, ${r.left}px ${r.top}px`);
-		}
-		if (userWindowVisible) {
-			const r = getRect(metrics.operatorWindowW, metrics.operatorWindowH, activeState.userY);
-			rects.push(`${r.left}px ${r.top}px, ${r.right}px ${r.top}px, ${r.right}px ${r.bottom}px, ${r.left}px ${r.bottom}px, ${r.left}px ${r.top}px`);
-		}
-		if (rects.length === 0) {
-			overlay.style.clipPath = `polygon(0 0, 0 0, 0 0)`;
-		}
-		else overlay.style.clipPath = `polygon(${rects.join(", ")})`;
+		if (operatorWindowVisible) rects.push(getRect(metrics.operatorWindowW, metrics.operatorWindowH, activeState.operatorY));
+		if (serverWindowVisible) rects.push(getRect(metrics.operatorWindowW, metrics.serverH, activeState.serverY));
+		if (userWindowVisible) rects.push(getRect(metrics.operatorWindowW, metrics.operatorWindowH, activeState.userY));
+		overlay.style.clipPath = `polygon(${rects.length ? rects.join(", ") : "0 0, 0 0, 0 0"})`;
 	}
 
 	function updateMorph(scrollY) {
@@ -2002,8 +1951,7 @@
 			if (scrollMetrics.morph1Duration) morphTime = clamp((scrollY - scrollMetrics.morphStart) / scrollMetrics.morph1Duration);
 		}
 		else if (scrollY < scrollMetrics.userListStartScroll) {
-			morphTime = 1;
-			if (scrollMetrics.zipDuration) morphTime += clamp((scrollY - scrollMetrics.zipStart) / scrollMetrics.zipDuration);
+			morphTime = 1 + (scrollMetrics.zipDuration ? clamp((scrollY - scrollMetrics.zipStart) / scrollMetrics.zipDuration) : 0);
 		}
 		else morphTime = 2 - (scrollMetrics.unzipDuration ? clamp((scrollY - scrollMetrics.userListStartScroll) / scrollMetrics.unzipDuration) : 0);
 		morphTween.seek(morphTime);
@@ -2011,6 +1959,7 @@
 
 	function updateProgressBar(scrollY) {
 		if (!progressContainer || !progressFill) return;
+		progressContainer.style.transform = `translate3d(0, ${(metrics.iconHeight / 2) * (activeState.effectScale - 1)}px, 0)`;
 		const barPackDuration = scrollMetrics.zipStart - scrollMetrics.packBackStart;
 		let barPackProgress = 0;
 		if (scrollY > scrollMetrics.packBackStart) barPackProgress = barPackDuration > 0 ? Math.min(1, (scrollY - scrollMetrics.packBackStart) / barPackDuration) : 1;
@@ -2059,7 +2008,10 @@
 			start: step2to3Start,
 			end: stepExitStart
 		}];
-		stepElements.forEach((el, i) => {
+		stepElements.forEach(({
+			el,
+			fill
+		}, i) => {
 			const myEntryStart = stepsEntryStart + (i * stepStagger);
 			let entryProg = 0;
 			if (scrollY > myEntryStart) entryProg = stepsEntryDuration > 0 ? Math.min(1, (scrollY - myEntryStart) / stepsEntryDuration) : 1;
@@ -2070,16 +2022,9 @@
 			el.style.opacity = 1;
 			const range = ranges[i];
 			let fillProgress = 0;
-			if (range && scrollY > range.start) {
-				const duration = range.end - range.start;
-				fillProgress = duration > 0 ? Math.min(1, (scrollY - range.start) / duration) : 1;
-			}
-			const fillEl = el.querySelector(".step-fill");
-			if (fillEl) fillEl.style.clipPath = `inset(0 ${100 - (fillProgress * 100)}% 0 0)`;
-			if (fillProgress >= 1) {
-				el.classList.add("is-done");
-			}
-			else el.classList.remove("is-done");
+			if (range && scrollY > range.start) fillProgress = Math.min(1, (scrollY - range.start) / (range.end - range.start));
+			fill?.style.setProperty("clip-path", `inset(0 ${100 - (fillProgress * 100)}% 0 0)`);
+			el.classList.toggle("is-done", fillProgress >= 1);
 		});
 	}
 
@@ -2188,7 +2133,10 @@
 		transformOrigin: "50% 50%"
 	}, 0);
 	const morphAnim = gsap.to(cursorPathEl, {
-		morphSVG: icons.gears,
+		morphSVG: {
+			shape: icons.gears,
+			curveMode: true
+		},
 		fill: "var(--hint)",
 		duration: 0.25,
 		ease: "none",
