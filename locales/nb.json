@@ -1,4 +1,8 @@
 {
+	"meta": {
+		"title": "Teamatica — moderne ansattkatalog: gratis, enkel, praktisk og rask",
+		"description": "Pålitelig lagring, sikker levering, trygg tilgang og fullstendig personvern: en moderne ansattkatalog fra den offisielle Microsoft Store for konfidensiell håndtering av bedriftens personopplysninger"
+	},
 	"hints": ["kontaktinformasjonen til dine ansatte", "en helt vanlig Microsoft Excel- og Google Sheets-fil", "et universelt format for å automatisere import fra ulike kilder", "opplasting manuelt eller via utløser", "Teamatica-appen fra Microsoft Store – for Operatøren", "filtrering, moderering, konvertering", "publisering av oppdateringer i hvilken som helst modus", "nettsiden til organisasjonen din", "beskyttelse av data på alle leveringsstadier", "samme app, men nå for Brukeren", "tilgang via passord, låsekode og MFA"],
 	"names": ["Astrid Hansen …", "Bjørn Johansen …", "Camilla Andersen …", "Dagfinn Olsen …", "Elin Karlsen …", "Fredrik Paulsen …", "Grethe Solberg …", "Henrik Vik …", "Ida Haugen …", "Jens Lien …", "Kari Moen …", "Lars Rasmussen …", "Mona Berntsen …", "Nils Strand …", "Oddvar Bakken …", "Pernille Jacobsen …", "Quinn Berg …", "Ragnhild Nome …", "Sverre Fossum …", "Ulf Torgersen …", "Vilde Aas …", "Wenche Myhre …", "Xenia Dahl …", "Yasmin Mehmood …", "Zahra Ali …", "Åse Lunde"],
 	"steps": ["LAGRE INFORMASJONEN I EN FIL", "LAST OPP FILEN TIL APPEN", "SYNKRONISER ENDRINGENE"],

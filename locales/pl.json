@@ -1,4 +1,8 @@
 {
+	"meta": {
+		"title": "Teamatica — nowoczesny katalog pracowników: darmowy, prosty, wygodny i szybki",
+		"description": "Niezawodne przechowywanie, bezpieczne przesyłanie, chroniony dostęp i absolutna prywatność: nowoczesny katalog pracowników z oficjalnego sklepu Microsoft Store do poufnego zarządzania firmowymi danymi osobowymi"
+	},
 	"hints": ["dane kontaktowe Twoich pracowników", "zwykły plik programów Microsoft Excel i Google Sheets", "uniwersalny format do automatyzacji importu z różnych źródeł", "ładowanie ręcznie lub na podstawie wyzwalacza", "aplikacja Teamatica ze sklepu Microsoft Store — dla Operatora", "filtrowanie, moderacja, konwersja", "publikowanie aktualizacji w dowolnym trybie", "strona internetowa Twojej organizacji", "ochrona danych na każdym etapie przesyłania", "ta sama aplikacja, ale teraz dla Użytkownika", "dostęp za pomocą hasła, kodu blokady i uwierzytelniania wieloskładnikowego (MFA)"],
 	"names": ["Agnieszka Wiśniewska …", "Bartosz Kowalski …", "Celina Zielińska …", "Damian Szymański …", "Ewelina Dąbrowska …", "Filip Jankowski …", "Gabriela Wójcik …", "Henryk Kamiński …", "Izabela Lewandowska …", "Jakub Nowak …", "Karolina Wróbel …", "Łukasz Majewski …", "Marta Adamczyk …", "Natalia Krawczyk …", "Oskar Pawłowski …", "Patrycja Kwiatkowska …", "Quentin Dubois …", "Renata Zając …", "Sebastian Król …", "Urszula Baran …", "Weronika Janik …", "Xawery Piotrowski …", "Yvonne Sikora …", "Zofia Czerwińska …", "Agnieszka Kępa …", "Zygfryd Banaś"],
 	"steps": ["ZAPISZ INFORMACJE W PLIKU", "WCZYTAJ PLIK DO APLIKACJI", "ZSYNCHRONIZUJ ZMIANY"],

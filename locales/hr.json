@@ -1,4 +1,8 @@
 {
+	"meta": {
+		"title": "Teamatica — moderni imenik zaposlenika: besplatan, jednostavan, praktičan i brz",
+		"description": "Pouzdana pohrana, sigurna isporuka, zaštićen pristup i apsolutna privatnost: moderni imenik zaposlenika iz službene trgovine Microsoft Store za povjerljivo upravljanje korporativnim osobnim podacima"
+	},
 	"hints": ["kontakt podaci vaših zaposlenika", "uobičajena datoteka Microsoft Excela i Google Sheetsa", "univerzalni format za automatizaciju uvoza iz različitih izvora", "ručno učitavanje ili putem okidača", "Teamatica aplikacija iz Microsoft Storea — za Operatera", "filtriranje, moderiranje, konverzija", "objava ažuriranja u bilo kojem načinu rada", "web stranica vaše organizacije", "zaštita podataka na svim razinama dostave", "ista aplikacija, ali sada za Korisnika", "pristup putem zaporke, koda za zaključavanje i MFA"],
 	"names": ["Ana Kovačević …", "Borna Horvat …", "Cvjetana Babić …", "Dario Nikolić …", "Elena Marković …", "Filip Jurić …", "Gordana Petrović …", "Hrvoje Vuković …", "Ivana Šimunović …", "Jakov Knežević …", "Klara Tomić …", "Luka Đukić …", "Maja Pavić …", "Nikolina Božić …", "Ognjen Vlahović …", "Petra Blažević …", "Quentin Marinović …", "Rina Lončar …", "Stjepan Rastić …", "Uroš Perić …", "Valentina Šarić …", "Walter Kovač …", "Xenia Grgić …", "Yasmin Hadžić …", "Zrinka Matić …", "Željko Babić"],
 	"steps": ["SPREMITE PODATKE U DATOTEKU", "UČITAJTE DATOTEKU U APLIKACIJU", "USKLAĐUJTE PROMJENE"],

@@ -1,4 +1,8 @@
 {
+	"meta": {
+		"title": "Teamatica — modern munkavállalói címtár: ingyenes, egyszerű, kényelmes és gyors",
+		"description": "Megbízható tárolás, biztonságos kézbesítés, védett hozzáférés és teljes adatvédelem: modern munkavállalói címtár a hivatalos Microsoft Store-ból a vállalati személyes adatok bizalmas kezeléséhez"
+	},
 	"hints": ["alkalmazottai elérhetőségek", "egy szokványos Microsoft Excel- és Google Sheets-fájl", "univerzális formátum az import automatizálásához különböző forrásokból", "kézi vagy triggeres feltöltés", "a Teamatica alkalmazás a Microsoft Store-ból – az Operátor számára", "szűrés, moderálás, konvertálás", "frissítések közzététele bármilyen módban", "szervezete weboldala", "az adatok védelme a kézbesítés minden szakaszában", "ugyanaz az alkalmazás, de most a Felhasználó számára", "hozzáférés jelszóval, zárkóddal és MFA-val"],
 	"names": ["Anna Kovács …", "Béla Tóth …", "Csilla Varga …", "Dóra Németh …", "Endre Horváth …", "Fanni Kiss …", "Gábor Szabó …", "Henrietta Farkas …", "István Oláh …", "Júlia Papp …", "Katalin Balogh …", "László Juhász …", "Márton Mészáros …", "Nóra Lukács …", "Ottó Simon …", "Piroska Nagy …", "Quentin Molnár …", "Réka Takács …", "Sándor Kocsis …", "Úna Török …", "Viktor Bodrogi …", "Walter Fehér …", "Xénia Kelemen …", "Ivett Bognár …", "Zita Csiszár …", "Áron Gál"],
 	"steps": ["MENTSE EL AZ INFORMÁCIÓT FÁJLBA", "TÖLTSE FEL A FÁJLT AZ ALKALMAZÁSBA", "SZINKRONIZÁLJA A VÁLTOZÁSOKAT"],

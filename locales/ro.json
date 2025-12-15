@@ -1,4 +1,8 @@
 {
+	"meta": {
+		"title": "Teamatica — director modern de angajați: gratuit, simplu, convenabil și rapid",
+		"description": "Stocare fiabilă, livrare securizată, acces protejat și confidențialitate absolută: un director modern de angajați din Microsoft Store oficial pentru gestionarea confidențială a datelor cu caracter personal corporative"
+	},
 	"hints": ["datele de contact ale angajaților tăi", "un fișier obișnuit Microsoft Excel și Google Sheets", "un format universal pentru automatizarea importului din diverse surse", "încărcare manuală sau prin declanșator", "aplicația Teamatica din Microsoft Store — pentru Operator", "filtrare, moderare, conversie", "publicarea actualizărilor în orice mod", "site-ul organizației tale", "protecția datelor la toate etapele livrării", "aceeași aplicație, dar acum pentru Utilizator", "acces prin parolă, cod de blocare și MFA"],
 	"names": ["Andreea Popescu …", "Bogdan Ionescu …", "Cristina Moldovan …", "Daniel Georgescu …", "Elena Marinescu …", "Florin Dumitrescu …", "Gabriela Albu …", "Horia Neagu …", "Ioana Costache …", "Iulian Varga …", "Karin Sava …", "Laurențiu Enache …", "Mirela Botez …", "Nicolae Rădulescu …", "Oana Ștefănescu …", "Paul Gheorghiu …", "Quinn Munteanu …", "Raluca Dinu …", "Sorin Pascu …", "Uliana Cojocaru …", "Vlad Dobre …", "Wanda Iliescu …", "Xenia Ardelean …", "Yara Stoica …", "Zinaida Lupu …", "Angela Cazacu"],
 	"steps": ["SALVEAZĂ INFORMAȚIILE ÎNTR-UN FIȘIER", "ÎNCARCĂ FIȘIERUL ÎN APLICAȚIE", "SINCRONIZEAZĂ MODIFICĂRILE"],

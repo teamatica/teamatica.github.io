@@ -1,4 +1,8 @@
 {
+	"meta": {
+		"title": "Teamatica — annuaire d'employés moderne : gratuit, simple, pratique et rapide",
+		"description": "Stockage fiable, distribution sécurisée, accès sûr et confidentialité absolue : un annuaire d'employés moderne du Microsoft Store officiel pour la gestion confidentielle des données personnelles de l'entreprise"
+	},
 	"hints": ["les coordonnées de vos employés", "un fichier Microsoft Excel ou Google Sheets tout à fait classique", "un format universel pour automatiser l’import depuis diverses sources", "téléversement manuel ou déclenché", "l’application Teamatica depuis le Microsoft Store – pour l’Opérateur", "filtrage, modération, conversion", "publication des mises à jour en tout mode", "le site web de votre organisation", "protection des données à chaque étape de la livraison", "la même application, mais désormais pour l’Utilisateur", "accès via mot de passe, code de verrouillage et MFA"],
 	"names": ["Adèle Martin …", "Bastien Dubois …", "Chloé Moreau …", "Dorian Lambert …", "Élodie Fournier …", "Florian Garnier …", "Gisèle Rousseau …", "Hugo Mercier …", "Inès Girard …", "Jules Fontaine …", "Kenza Benali …", "Léa Chevalier …", "Mathis Lefèvre …", "Nina Marchand …", "Olivier Renaud …", "Pauline Caron …", "Quentin Brunet …", "Romane Mayer …", "Samuel Becker …", "Ulysse Laurent …", "Viviane Petit …", "Wassim Hamdi …", "Xavière Navarro …", "Yasmine Kaci …", "Zoé Aubert …", "Åke Nilsson"],
 	"steps": ["ENREGISTREZ LES INFORMATIONS DANS UN FICHIER", "CHARGEZ LE FICHIER DANS L’APPLICATION", "SYNCHRONISEZ LES MODIFICATIONS"],

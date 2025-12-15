@@ -1,4 +1,8 @@
 {
+	"meta": {
+		"title": "Teamatica — moderní adresář zaměstnanců: bezplatný, jednoduchý, pohodlný a rychlý",
+		"description": "Spolehlivé úložiště, zabezpečené doručení, bezpečný přístup a absolutní soukromí: moderní adresář zaměstnanců z oficiálního Microsoft Store pro důvěrnou správu firemních osobních údajů"
+	},
 	"hints": ["kontaktní údaje vašich zaměstnanců", "běžný soubor z Microsoft Excelu nebo Google Sheets", "univerzální formát pro automatizaci importu z různých zdrojů", "nahrání ručně nebo na základě aktivačního signálu", "aplikace Teamatica z Microsoft Store – pro Operátora", "filtrování, moderování, konverze", "publikování aktualizací v jakémkoli režimu", "webové stránky vaší organizace", "ochrana dat na všech úrovních přenosu", "táž aplikace, ale nyní pro Uživatele", "přístup pomocí hesla, zámku a vícefaktorové autentizace (MFA)"],
 	"names": ["Adéla Vavřincová …", "Bohumil Řehoř …", "Čeněk Doležal …", "Dana Holubová …", "Eliška Svobodová …", "František Kříž …", "Gabriela Poláková …", "Hana Burešová …", "Igor Malý …", "Jarmila Němcová …", "Kamil Horák …", "Lenka Dvořáková …", "Milan Kučera …", "Nikola Jelínková …", "Otakar Procházka …", "Pavlína Veselá …", "Radek Slavík …", "Šárka Hájková …", "Tomáš Navrátil …", "Ursula Blažková …", "Václav Šimek …", "Xenie Kopecká …", "Yvona Šťastná …", "Zdeněk Marek …", "Alžběta Čermáková …", "Božena Novotná …"],
 	"steps": ["ULOŽTE INFORMACE DO SOUBORU", "NAHRAJTE SOUBOR DO APLIKACE", "SYNCHRONIZUJTE ZMĚNY"],

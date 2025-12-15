@@ -6,7 +6,16 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>Teamatica</title>
+	<title>Teamatica — modern employee directory: free, simple, convenient, and fast</title>
+	<meta name="description" content="Reliable storage, secure delivery, safe access, and absolute privacy: a modern employee directory from the official Microsoft Store for confidential management of corporate personal data">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta property="og:type" content="website">
+	<meta property="og:url" content="https://teamatica.github.io">
+	<meta property="og:title" content="Teamatica — modern employee directory: free, simple, convenient, and fast">
+	<meta property="og:description" content="Reliable storage, secure delivery, safe access, and absolute privacy: a modern employee directory from the official Microsoft Store for confidential management of corporate personal data">
+	<meta property="og:image" content="https://teamatica.github.io/open-graph.png">
+	<link rel="apple-touch-icon" href="apple-touch-icon.png">
+	<link rel="canonical" href="https://teamatica.github.io">
 	<link rel="icon" type="image/x-icon" href="favicon.v1.ico">
 	<style>
 	:root {
@@ -1232,24 +1241,39 @@
 	function loadLocaleData() {
 		const currentLang = (navigator.language.slice(0, 2).toLowerCase().match(/^(be|bg|cs|da|de|el|en|es|fi|fr|hr|hu|it|kk|nb|nl|pl|pt|ro|ru|sr|sv|tr|uk|uz)$/) || ["en"])[0];
 		document.documentElement.lang = currentLang;
-		fetch(`/locales/${currentLang}.json`).then(res => res.ok ? res.json() : Promise.reject(res)).then(data => {
-			initNames(data.names, currentLang);
-			initSteps(data.steps);
-			introHints.init(data.texts);
-			const rawHints = data.hints;
-			hintsConfig.forEach((conf, i) => {
-				conf.text = rawHints[i] || "";
-				conf.textLen = conf.text.length;
-				if (conf.elemText) conf.elemText.textContent = "";
-			});
-			onResize(true);
-			if (!isInitialized) {
-				isInitialized = true;
-				if (morphTween) morphTween.progress(0);
-				window.scrollY > 0 ? skipIntroAnimation() : runIntroAnimation();
-				requestAnimationFrame(onScroll);
-			}
-		}).catch(err => console.error(`${currentLang}`, err));
+		fetch(`/locales/${currentLang}.json`) // Если сайт в корне, слэш в начале ок. Если в папке — уберите слэш.
+			.then(res => res.ok ? res.json() : Promise.reject(res)).then(data => {
+				if (data.meta && data.meta.title) {
+					document.title = data.meta.title;
+					document.querySelector('meta[property="og:title"]')?.setAttribute("content", data.meta.title);
+				}
+				if (data.meta && data.meta.description) {
+					document.querySelector('meta[property="og:description"]')?.setAttribute("content", data.meta.description);
+					let metaDesc = document.querySelector('meta[name="description"]');
+					if (!metaDesc) {
+						metaDesc = document.createElement("meta");
+						metaDesc.name = "description";
+						document.head.appendChild(metaDesc);
+					}
+					metaDesc.setAttribute("content", data.meta.description);
+				}
+				initNames(data.names, currentLang);
+				initSteps(data.steps);
+				introHints.init(data.texts);
+				const rawHints = data.hints;
+				hintsConfig.forEach((conf, i) => {
+					conf.text = rawHints[i] || "";
+					conf.textLen = conf.text.length;
+					if (conf.elemText) conf.elemText.textContent = "";
+				});
+				onResize(true);
+				if (!isInitialized) {
+					isInitialized = true;
+					if (morphTween) morphTween.progress(0);
+					window.scrollY > 0 ? skipIntroAnimation() : runIntroAnimation();
+					requestAnimationFrame(onScroll);
+				}
+			}).catch(err => console.error(`${currentLang}`, err));
 	}
 	loadLocaleData();
 	window.addEventListener("languagechange", loadLocaleData);
