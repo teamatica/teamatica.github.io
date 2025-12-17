@@ -612,15 +612,18 @@
 			4: "var(--window)",
 			5: "var(--window)",
 			6: "var(--window)",
-			7: "var(--server)",
-			8: "var(--window)",
-			9: "var(--window)",
+			7: "var(--window)",
+			8: "var(--server)",
+			9: "var(--server)",
 			10: "var(--window)",
+			11: "var(--window)",
+			12: "var(--window)",
+			13: "var(--window)",
 		};
 		idWrap.insertAdjacentHTML("beforeend", Array.from({
-			length: 11
+			length: 14
 		}, (_, i) => {
-			const isLeft = [1, 2, 3, 4, 9].includes(i);
+			const isLeft = [1, 2, 3, 4, 8, 12].includes(i);
 			return `<div class="hint-line" id="hintLine${i}"><svg><defs><linearGradient id="grad${i}" x1="${isLeft ? "100%" : "0%"}" y1="0%" x2="${isLeft ? "0%" : "100%"}" y2="0%"><stop offset="0%" stop-color="${hintColors[i] || "var(--hint)"}" /><stop offset="100%" stop-color="var(--hint)" /></linearGradient></defs><path id="hintPath${i}" fill="none" stroke-width="1" stroke="url(#grad${i})"></path></svg></div><div class="hint-text" id="hintText${i}"></div>`;
 		}).join(""));
 	})();
@@ -709,27 +712,27 @@
 			side: "right"
 		}],
 		outroAnchors: [{
-			id: "out_t1",
+			id: "a",
 			side: "top",
 			pos: 0.3
 		}, {
-			id: "out_t2",
+			id: "b",
 			side: "top",
 			pos: 0.7
 		}, {
-			id: "out_b1",
+			id: "c",
 			side: "bottom",
 			pos: 0.3
 		}, {
-			id: "out_b2",
+			id: "d",
 			side: "bottom",
 			pos: 0.7
 		}, {
-			id: "out_l1",
+			id: "e",
 			side: "left",
 			pos: 0.5
 		}, {
-			id: "out_r1",
+			id: "f",
 			side: "right",
 			pos: 0.5
 		}],
@@ -1165,28 +1168,16 @@
 			x: m.quarterW * 2,
 			y: s.firstItemY + (m.itemBaseHeight * s.firstItemScale)
 		}),
-		hint1: (s, m) => {
-			const sc = s.effectScale || 1;
-			const half = m.iconHeight / 2;
-			const staticY = half - half - ui.smallGap;
-			const dy = half * (1 - sc);
-			return {
-				x: m.quarterW * 3,
-				y: staticY,
-				dy: dy
-			};
-		},
-		hint2: (s, m) => {
-			const sc = s.effectScale || 1;
-			const half = m.iconHeight / 2;
-			const staticY = half + half + ui.smallGap;
-			const dy = half * (sc - 1);
-			return {
-				x: m.quarterW * 3,
-				y: staticY,
-				dy: dy
-			};
-		},
+		hint1: (s, m) => ({
+			x: m.quarterW * 3,
+			y: -ui.smallGap,
+			dy: (m.iconHeight / 2) * (1 - (s.effectScale || 1))
+		}),
+		hint2: (s, m) => ({
+			x: m.quarterW * 3,
+			y: m.iconHeight + ui.smallGap,
+			dy: (m.iconHeight / 2) * ((s.effectScale || 1) - 1)
+		}),
 		hint3: (s, m) => ({
 			x: s.cursorRelX - ui.smallGap,
 			y: s.cursorRelY - ui.smallGap
@@ -1201,21 +1192,33 @@
 		}),
 		hint6: (s, m) => ({
 			x: m.quarterW,
-			y: window.scrollY > scrollMetrics.serverExitStart ? s.serverY - ui.smallGap : -ui.smallGap
+			y: m.iconHeight + ui.smallGap
 		}),
 		hint7: (s, m) => ({
+			x: m.quarterW,
+			y: window.scrollY > scrollMetrics.serverExitStart ? s.serverY - ui.smallGap : -ui.smallGap
+		}),
+		hint8: (s, m) => ({
+			x: (m.operatorWindowW / 2) + (m.iconHeight / 5),
+			y: (m.iconHeight / 2) + s.serverY - (m.serverH / 2) - s.stageY - ui.smallGap
+		}),
+		hint9: (s, m) => ({
 			x: -(m.operatorWindowW / 2) + (m.iconHeight * 0.8),
 			y: (m.iconHeight / 2) + s.serverY + (m.serverH / 2) - s.stageY + ui.smallGap
 		}),
-		hint8: (s, m) => ({
+		hint10: (s, m) => ({
 			x: m.quarterW,
 			y: m.iconHeight + ui.smallGap
 		}),
-		hint9: (s, m) => ({
+		hint11: (s, m) => ({
+			x: m.quarterW,
+			y: -ui.smallGap
+		}),
+		hint12: (s, m) => ({
 			x: (m.operatorWindowW / 2) + (m.iconHeight / 5),
 			y: (m.iconHeight / 2) + s.userY - s.stageY - (m.operatorWindowH / 2) - ui.smallGap
 		}),
-		hint10: (s, m) => ({
+		hint13: (s, m) => ({
 			x: -(m.operatorWindowW / 2) + (m.iconHeight * 0.8),
 			y: (m.iconHeight / 2) + s.userY - s.stageY + (m.operatorWindowH / 2) + ui.smallGap
 		})
@@ -1227,53 +1230,46 @@
 			elemLine: elemLine,
 			elemPath: document.getElementById(`hintPath${i}`),
 			elemText: document.getElementById(`hintText${i}`),
-			side: [1, 2, 3, 4, 9].includes(i) ? "left" : "right",
+			side: [1, 2, 3, 4, 8, 12].includes(i) ? "left" : "right",
 			prevD: null,
 			prevLen: -1,
 			startScroll: 0,
 			eraseScroll: 0,
 			text: "",
 			textLen: 0,
-			curveDir: [1, 3, 4, 6, 9].includes(i) ? -1 : 1
+			curveDir: [1, 3, 4, 7, 8, 11, 12].includes(i) ? -1 : 1
 		};
 	});
 
 	function loadLocaleData() {
 		const currentLang = (navigator.language.slice(0, 2).toLowerCase().match(/^(be|bg|cs|da|de|el|en|es|fi|fr|hr|hu|it|kk|nb|nl|pl|pt|ro|ru|sr|sv|tr|uk|uz)$/) || ["en"])[0];
 		document.documentElement.lang = currentLang;
-		fetch(`/locales/${currentLang}.json`) // Если сайт в корне, слэш в начале ок. Если в папке — уберите слэш.
-			.then(res => res.ok ? res.json() : Promise.reject(res)).then(data => {
-				if (data.meta && data.meta.title) {
-					document.title = data.meta.title;
-					document.querySelector('meta[property="og:title"]')?.setAttribute("content", data.meta.title);
-				}
-				if (data.meta && data.meta.description) {
-					document.querySelector('meta[property="og:description"]')?.setAttribute("content", data.meta.description);
-					let metaDesc = document.querySelector('meta[name="description"]');
-					if (!metaDesc) {
-						metaDesc = document.createElement("meta");
-						metaDesc.name = "description";
-						document.head.appendChild(metaDesc);
-					}
-					metaDesc.setAttribute("content", data.meta.description);
-				}
-				initNames(data.names, currentLang);
-				initSteps(data.steps);
-				introHints.init(data.texts);
-				const rawHints = data.hints;
-				hintsConfig.forEach((conf, i) => {
-					conf.text = rawHints[i] || "";
-					conf.textLen = conf.text.length;
-					if (conf.elemText) conf.elemText.textContent = "";
-				});
-				onResize(true);
-				if (!isInitialized) {
-					isInitialized = true;
-					if (morphTween) morphTween.progress(0);
-					window.scrollY > 0 ? skipIntroAnimation() : runIntroAnimation();
-					requestAnimationFrame(onScroll);
-				}
-			}).catch(err => console.error(`${currentLang}`, err));
+		fetch(`/locales/${currentLang}.json`).then(res => res.ok ? res.json() : Promise.reject(res)).then(data => {
+			if (data.meta && data.meta.title) {
+				document.title = data.meta.title;
+				document.querySelector('meta[property="og:title"]')?.setAttribute("content", data.meta.title);
+			}
+			if (data.meta && data.meta.description) {
+				document.querySelector('meta[property="og:description"]')?.setAttribute("content", data.meta.description);
+				document.querySelector('meta[name="description"]')?.setAttribute("content", data.meta.description);
+			}
+			initNames(data.names, currentLang);
+			initSteps(data.steps);
+			introHints.init(data.texts);
+			const rawHints = data.hints;
+			hintsConfig.forEach((conf, i) => {
+				conf.text = rawHints[i] || "";
+				conf.textLen = conf.text.length;
+				if (conf.elemText) conf.elemText.textContent = "";
+			});
+			onResize(true);
+			if (!isInitialized) {
+				isInitialized = true;
+				if (morphTween) morphTween.progress(0);
+				window.scrollY > 0 ? skipIntroAnimation() : runIntroAnimation();
+				requestAnimationFrame(onScroll);
+			}
+		}).catch(err => console.error(`${currentLang}`, err));
 	}
 	loadLocaleData();
 	window.addEventListener("languagechange", loadLocaleData);
@@ -1423,7 +1419,7 @@
 		scrollMetrics.listEndScroll = scrollMetrics.listStartScroll + scrollMetrics.listDuration + scrollMetrics.pauseDuration;
 		scrollMetrics.packBackStart = scrollMetrics.listEndScroll - scrollMetrics.pauseDuration;
 		hints[3].startScroll = hints[1].eraseScroll;
-		hints[3].eraseScroll = scrollMetrics.listStartScroll;
+		hints[3].eraseScroll = hints[2].eraseScroll + lineDuration + (hints[2].textLen * charUnit);
 		hints[4].startScroll = scrollMetrics.operatorWindowStartScroll + scrollMetrics.operatorWindowDuration - lineDuration - (hints[4].textLen * charUnit);
 		hints[4].eraseScroll = scrollMetrics.packBackStart + (cachedH * (0.4 + (Math.max(0, nameElements.length - 1) * 0.02))) - lineDuration - (hints[4].textLen * charUnit);
 		hints[5].startScroll = hints[4].startScroll + lineDuration + (hints[4].textLen * charUnit);
@@ -1441,16 +1437,22 @@
 		scrollMetrics.serverWaitDuration = cachedH;
 		scrollMetrics.serverExitStart = scrollMetrics.serverWaitStart + scrollMetrics.serverWaitDuration;
 		scrollMetrics.serverExitDuration = moveDuration;
-		hints[6].startScroll = scrollMetrics.zipStart + (scrollMetrics.operatorExitDuration * (((metrics.operatorWindowH / 2) + (metrics.iconHeight / 2)) / (cachedH + metrics.operatorWindowH)));
-		hints[6].eraseScroll = scrollMetrics.serverWaitStart;
-		hints[7].startScroll = scrollMetrics.serverWaitStart - lineDuration - (hints[7].textLen * charUnit);
-		hints[7].eraseScroll = scrollMetrics.serverExitStart;
-		hints[8].startScroll = hints[7].eraseScroll;
-		hints[8].eraseScroll = scrollMetrics.serverExitStart + scrollMetrics.serverExitDuration - lineDuration - (hints[9].textLen * charUnit);
-		hints[9].startScroll = hints[8].eraseScroll;
-		hints[9].eraseScroll = hints[9].startScroll + lineDuration + (hints[9].textLen * charUnit) + lineDuration + (hints[10].textLen * charUnit);
-		hints[10].startScroll = scrollMetrics.serverExitStart + scrollMetrics.serverExitDuration;
-		hints[10].eraseScroll = Math.max(hints[9].eraseScroll + lineDuration + (hints[9].textLen * charUnit), hints[10].startScroll + lineDuration + (hints[10].textLen * charUnit) + (cachedH * 0.5));
+		hints[6].startScroll = scrollMetrics.zipStart;
+		hints[6].eraseScroll = hints[6].startScroll + lineDuration + (hints[6].textLen * charUnit) + lineDuration + (hints[7].textLen * charUnit);
+		hints[7].startScroll = hints[6].startScroll + lineDuration + (hints[6].textLen * charUnit);
+		hints[7].eraseScroll = hints[6].eraseScroll + lineDuration + (hints[6].textLen * charUnit);
+		hints[8].startScroll = scrollMetrics.serverWaitStart - lineDuration - (hints[8].textLen * charUnit);
+		hints[8].eraseScroll = scrollMetrics.serverExitStart - lineDuration - (hints[8].textLen * charUnit);
+		hints[9].startScroll = scrollMetrics.serverWaitStart;
+		hints[9].eraseScroll = scrollMetrics.serverExitStart;
+		hints[10].startScroll = hints[9].eraseScroll;
+		hints[10].eraseScroll = hints[10].startScroll + lineDuration + (hints[10].textLen * charUnit) + lineDuration + (hints[11].textLen * charUnit);
+		hints[11].startScroll = hints[10].startScroll + lineDuration + (hints[10].textLen * charUnit);
+		hints[11].eraseScroll = hints[10].eraseScroll + lineDuration + (hints[10].textLen * charUnit);
+		hints[12].startScroll = hints[11].eraseScroll;
+		hints[12].eraseScroll = hints[12].startScroll + lineDuration + (hints[12].textLen * charUnit) + lineDuration + (hints[13].textLen * charUnit);
+		hints[13].startScroll = hints[10].startScroll + scrollMetrics.serverExitDuration;
+		hints[13].eraseScroll = Math.max(hints[12].eraseScroll + lineDuration + (hints[12].textLen * charUnit), hints[13].startScroll + lineDuration + (hints[13].textLen * charUnit) + (cachedH * 0.5));
 		scrollMetrics.morphStart = scrollMetrics.listStartScroll;
 		scrollMetrics.morph1Duration = scrollMetrics.zipStart - scrollMetrics.morphStart;
 		scrollMetrics.listRowH = (metrics.operatorWindowH - ui.winPadding) / nameElements.length;
@@ -1458,10 +1460,10 @@
 		scrollMetrics.listStartX = (metrics.operatorWindowW / -2) + ui.hintOffset;
 		scrollMetrics.listStartY = -((nameElements.length - 1) * scrollMetrics.listRowH) / 2;
 		scrollMetrics.itemDuration = Math.max(0.1, 1 - (Math.max(0, nameElements.length - 1) * 0.01));
-		scrollMetrics.userExitStart = hints[10].eraseScroll;
+		scrollMetrics.userExitStart = hints[13].eraseScroll;
 		scrollMetrics.userExitDuration = moveDuration;
 		scrollMetrics.userContactP = clamp(1 - (((metrics.iconHeight / 2) + (metrics.operatorWindowH / 2)) / ((cachedH / 2) + (metrics.operatorWindowH / 2))));
-		scrollMetrics.userListStartScroll = (scrollMetrics.serverExitStart + (scrollMetrics.serverExitDuration * 0.5)) + ((scrollMetrics.serverExitDuration * 0.5) * scrollMetrics.userContactP);
+		scrollMetrics.userListStartScroll = (hints[10].startScroll + (scrollMetrics.serverExitDuration * 0.5)) + ((scrollMetrics.serverExitDuration * 0.5) * scrollMetrics.userContactP);
 		scrollMetrics.unzipDuration = (scrollMetrics.serverExitDuration * 0.5) * (1 - scrollMetrics.userContactP);
 		document.querySelector(".scrolly").style.cssText = `height: ${scrollMetrics.userExitStart + scrollMetrics.userExitDuration + cachedH + charUnit}px; min-height: 0px; padding-bottom: 0px`;
 		const half = (nameElements.length - 1) / 2;
@@ -1489,7 +1491,7 @@
 		scrollMetrics.step2to3Duration = lineDuration + (hints[5].textLen * charUnit);
 		scrollMetrics.step2to3Start = hints[5].eraseScroll + lineDuration + (hints[5].textLen * charUnit) - scrollMetrics.step2to3Duration;
 		scrollMetrics.stepExitDuration = scrollMetrics.pauseDuration;
-		scrollMetrics.stepExitStart = hints[10].startScroll - scrollMetrics.unzipDuration;
+		scrollMetrics.stepExitStart = hints[13].startScroll;
 		scrollMetrics.scaleUpStart = hints[1].eraseScroll;
 		scrollMetrics.scaleUpEnd = scrollMetrics.scaleUpStart + lineDuration + (hints[1].textLen * charUnit);
 		scrollMetrics.scaleDownStart = scrollMetrics.listStartScroll;
