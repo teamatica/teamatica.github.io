@@ -1256,9 +1256,8 @@
 			initNames(data.names, currentLang);
 			initSteps(data.steps);
 			introHints.init(data.texts);
-			const rawHints = data.hints;
 			hintsConfig.forEach((conf, i) => {
-				conf.text = rawHints[i] || "";
+				conf.text = data.hints[i] || "";
 				conf.textLen = conf.text.length;
 				if (conf.elemText) conf.elemText.textContent = "";
 			});
