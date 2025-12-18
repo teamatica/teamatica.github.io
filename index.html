@@ -1449,7 +1449,7 @@
 		hints[10].eraseScroll = hints[10].startScroll + lineDuration + (hints[10].textLen * charUnit) + lineDuration + (hints[11].textLen * charUnit);
 		hints[11].startScroll = hints[10].startScroll + lineDuration + (hints[10].textLen * charUnit);
 		hints[11].eraseScroll = hints[10].eraseScroll + lineDuration + (hints[10].textLen * charUnit);
-		hints[12].startScroll = hints[11].eraseScroll;
+		hints[12].startScroll = hints[10].startScroll + scrollMetrics.serverExitDuration - lineDuration - (hints[12].textLen * charUnit);
 		hints[12].eraseScroll = hints[12].startScroll + lineDuration + (hints[12].textLen * charUnit) + lineDuration + (hints[13].textLen * charUnit);
 		hints[13].startScroll = hints[10].startScroll + scrollMetrics.serverExitDuration;
 		hints[13].eraseScroll = Math.max(hints[12].eraseScroll + lineDuration + (hints[12].textLen * charUnit), hints[13].startScroll + lineDuration + (hints[13].textLen * charUnit) + (cachedH * 0.5));
