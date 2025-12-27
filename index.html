@@ -1066,6 +1066,18 @@
 	};
 
 	function runIntroAnimation() {
+		if (window.scrollY > 0) {
+			isLogoVisible = false;
+			loader.style.pointerEvents = "none";
+			gsap.set(logoItems, {
+				y: -window.innerHeight,
+				opacity: 0
+			});
+			gsap.set(".side-logo", {
+				left: `${ui.logoMove}px`
+			});
+			return;
+		}
 		loader.style.pointerEvents = "auto";
 		isLogoVisible = true;
 		gsap.set(sideLogo, {
@@ -1075,7 +1087,8 @@
 			left: `${ui.logoMove}px`,
 			duration: 1,
 			ease: "power2.out",
-			delay: 1
+			delay: 1,
+			overwrite: true
 		});
 		gsap.fromTo(logoItems, {
 			y: window.innerHeight,
@@ -1089,6 +1102,7 @@
 			},
 			ease: "power2.out",
 			duration: 2,
+			overwrite: true,
 			onComplete: () => {
 				setTimeout(() => {
 					if (window.scrollY === 0) introHints.start();
@@ -1100,6 +1114,7 @@
 			duration: 2,
 			ease: "power2.out",
 			delay: 2,
+			overwrite: true,
 			onStart: () => {
 				scrollHintVisible = true;
 			},
@@ -1125,17 +1140,18 @@
 	}
 
 	function animateLogoItems(direction) {
-		gsap.killTweensOf(logoItems);
 		const isLeaving = direction === "up";
+		gsap.killTweensOf(logoItems);
 		gsap.to(logoItems, {
 			y: isLeaving ? -window.innerHeight * 1.1 : 0,
 			opacity: isLeaving ? 0 : 1,
 			stagger: {
-				each: isLeaving ? 0.1 : 0.05,
+				each: isLeaving ? 0.05 : 0.1,
 				from: "random"
 			},
 			ease: isLeaving ? "power2.in" : "power2.out",
-			duration: 1.5,
+			duration: isLeaving ? 1.2 : 1.5,
+			overwrite: true,
 			onStart: () => {
 				if (isLeaving) loader.style.pointerEvents = "none";
 			},
@@ -1479,7 +1495,7 @@
 		hints[12].startScroll = hints[10].startScroll + scrollMetrics.serverExitDuration - lineDuration - (hints[12].textLen * charUnit);
 		hints[12].eraseScroll = hints[12].startScroll + lineDuration + (hints[12].textLen * charUnit) + lineDuration + (hints[13].textLen * charUnit);
 		hints[13].startScroll = hints[10].startScroll + scrollMetrics.serverExitDuration;
-		hints[13].eraseScroll = Math.max(hints[12].eraseScroll + lineDuration + (hints[12].textLen * charUnit), hints[13].startScroll + lineDuration + (hints[13].textLen * charUnit) + (cachedH * 0.5));
+		hints[13].eraseScroll = hints[12].eraseScroll + lineDuration + (hints[12].textLen * charUnit);
 		scrollMetrics.morphStart = scrollMetrics.listStartScroll;
 		scrollMetrics.morph1Duration = hints[6].startScroll - scrollMetrics.morphStart;
 		scrollMetrics.listRowH = (metrics.operatorWindowH - ui.winPadding) / nameElements.length;
